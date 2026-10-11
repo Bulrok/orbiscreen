@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.36.2
+%global version 0.36.3
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Sun Oct 11 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.3-1
+- Release 0.36.3: honor each client's requested resolution (drop the pin/SetDefaults forcing that caused a resize loop), stop the client resize-after-connect, and raise the AOA proxy stream cap from 16 to 48 to end the eviction storm
+
 * Sun Oct 11 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.2-1
 - Release 0.36.2: clamp the Android stream to the tablet panel and apply it after connecting, so a low-end decoder (Allwinner L10) is not pinned to 2560x1600 and overloaded
 

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.3] - 2026-10-11
+
+### Fixed
+- fix: honor each client's requested resolution and stop the AOA stream eviction storm
+
+- A pinned (or `SetDefaults`) host display was forced over every client's requested resolution because `target_resolution` returned the pinned size first. A client therefore had to resize after connecting, and with two tablets that resize/reconnect cycle looped, driving both streams past 1200 ms. The client's explicit request now wins and the pinned size is used only when a client asks for nothing
+- The Android client no longer resizes after connecting (the host now supplies the right size), removing the resize loop that regressed both tablets in v0.36.2
+- The AOA proxy stream cap was raised from 16 to 48: the client keeps its keep-alive connections open, so 15 streams sat against a cap of 16 and every new request evicted the oldest, disconnecting a live stream about once a second and adding latency
+- Version bumped to 0.36.3 across the Cargo workspace, Android (`versionCode` 162), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.2] - 2026-10-11
 
 ### Fixed

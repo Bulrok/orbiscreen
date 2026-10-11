@@ -48,7 +48,6 @@ pub struct HubConfig {
     pub refresh_hz: u32,
     pub default_width: u32,
     pub default_height: u32,
-    pub has_explicit_override: bool,
 }
 
 struct Session {
@@ -157,11 +156,7 @@ pub(crate) fn target_resolution(
     client_width: u32,
     client_height: u32,
 ) -> (u32, u32) {
-    let client_asked = client_width > 0 && client_height > 0;
-    if cfg.has_explicit_override && cfg.default_width > 0 && cfg.default_height > 0 {
-        return (cfg.default_width, cfg.default_height);
-    }
-    if client_asked {
+    if client_width > 0 && client_height > 0 {
         return (client_width, client_height);
     }
     if cfg.default_width > 0 && cfg.default_height > 0 {
@@ -186,7 +181,6 @@ async fn handle_cmd(
             cfg.default_width = width;
             cfg.default_height = height;
             cfg.refresh_hz = refresh_hz;
-            cfg.has_explicit_override = true;
         }
         DisplayCommand::Acquire {
             name,
@@ -1268,35 +1262,28 @@ mod tests {
         );
     }
 
-    fn hub(explicit: bool, w: u32, h: u32) -> super::HubConfig {
+    fn hub(w: u32, h: u32) -> super::HubConfig {
         super::HubConfig {
             encode_kind: orbiscreen_encode::EncoderKind::Auto,
             bitrate_kbps: 8000,
             refresh_hz: 60,
             default_width: w,
             default_height: h,
-            has_explicit_override: explicit,
         }
     }
 
     #[test]
-    fn an_explicit_host_override_beats_the_client() {
-        let cfg = hub(true, 1920, 1152);
-        assert_eq!(super::target_resolution(&cfg, 2560, 1536), (1920, 1152));
-    }
-
-    #[test]
-    fn without_an_override_the_client_decides() {
-        let cfg = hub(false, 1920, 1152);
+    fn the_client_request_beats_the_host_default() {
+        let cfg = hub(1920, 1152);
         assert_eq!(super::target_resolution(&cfg, 1280, 800), (1280, 800));
         assert_eq!(super::target_resolution(&cfg, 2560, 1536), (2560, 1536));
     }
 
     #[test]
-    fn the_config_is_used_when_the_client_asks_for_nothing() {
-        let cfg = hub(false, 1920, 1152);
+    fn the_host_default_is_used_when_the_client_asks_for_nothing() {
+        let cfg = hub(1920, 1152);
         assert_eq!(super::target_resolution(&cfg, 0, 0), (1920, 1152));
-        let empty = hub(false, 0, 0);
+        let empty = hub(0, 0);
         assert_eq!(super::target_resolution(&empty, 0, 0), (1920, 1080));
     }
 }

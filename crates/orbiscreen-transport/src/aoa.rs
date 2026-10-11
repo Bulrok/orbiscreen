@@ -67,7 +67,7 @@ type StreamEntry = (
 );
 type StreamMap = Arc<Mutex<HashMap<u16, StreamEntry>>>;
 
-const MAX_AOA_STREAMS: usize = 16;
+const MAX_AOA_STREAMS: usize = 48;
 
 const ANDROID_VENDORS: &[u16] = &[
     0x18d1, 0x17ef, 0x2717, 0x04e8, 0x12d1, 0x22b8, 0x22d9, 0x2d95, 0x1004, 0x0fce, 0x0b05, 0x0bb4,

@@ -1,3 +1,19 @@
+orbiscreen (0.36.3~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.36.3 for Ubuntu noble.
+  * Fix: a pinned (or SetDefaults) host display was forced over every
+    client's requested resolution, so each client had to resize after
+    connecting; with two tablets that resize/reconnect cycle looped and drove
+    both streams past 1200 ms. The client's explicit request now wins and the
+    pinned size is used only when a client asks for nothing.
+  * The Android client no longer resizes after connecting.
+  * The AOA proxy stream cap is raised from 16 to 48: the client keeps about
+    15 keep-alive streams open, so a cap of 16 evicted a live stream roughly
+    once a second and added latency.
+  * Bump version to 0.36.3 across all packages; Android versionCode 162.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Sun, 11 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.2~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.2 for Ubuntu noble.

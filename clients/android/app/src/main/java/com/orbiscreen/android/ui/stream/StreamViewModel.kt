@@ -463,13 +463,11 @@ class StreamViewModel(
                 return
             }
             val (targetW, targetH) = selectedResolution()
-            val sessionW = session?.width?.takeIf { it > 0 }
-            val sessionH = session?.height?.takeIf { it > 0 }
-            val w = sessionW
+            val w = session?.width?.takeIf { it > 0 }
                 ?: targetW.takeIf { it > 0 }
                 ?: hostInfo?.width
                 ?: identity.width
-            val h = sessionH
+            val h = session?.height?.takeIf { it > 0 }
                 ?: targetH.takeIf { it > 0 }
                 ?: hostInfo?.height
                 ?: identity.height
@@ -480,12 +478,10 @@ class StreamViewModel(
                 encoder = session?.encoder ?: hostInfo?.encoder.orEmpty(),
                 version = hostInfo?.version.orEmpty(),
             )
-            inputDispatcher?.resize(w, h)
-            if (session != null && targetW > 0 && targetH > 0 &&
-                (sessionW != targetW || sessionH != targetH)
-            ) {
-                updateDimensions(targetW, targetH)
-            }
+            inputDispatcher?.resize(
+                _state.value.displayWidth,
+                _state.value.displayHeight,
+            )
             playerHolder.refreshSession = { reopenDisplaySession() }
             playerHolder.onResolutionFallback = { w, h -> updateDimensions(w, h) }
             playerHolder.udpKeyIssuer = { opened ->
