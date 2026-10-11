@@ -1,3 +1,17 @@
+orbiscreen (0.36.2~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.36.2 for Ubuntu noble.
+  * Fix: a pinned host display overrides a client's requested resolution by
+    design, so a low-end tablet (Allwinner L10, panel 1280x800 @ 59 Hz, H.264
+    decoder capped at 2048x2048 and 489,600 macroblocks/s) was pinned to
+    2560x1600 and ran about twice over its macroblock budget, giving blocky
+    output near 30 fps with 300-400 ms of latency. The Android client now
+    clamps the selected resolution to the panel and applies it with a resize
+    after connecting.
+  * Bump version to 0.36.2 across all packages; Android versionCode 161.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Sun, 11 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.1~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.1 for Ubuntu noble.

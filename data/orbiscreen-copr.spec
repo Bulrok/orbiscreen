@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.36.1
+%global version 0.36.2
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Sun Oct 11 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.2-1
+- Release 0.36.2: clamp the Android stream to the tablet panel and apply it after connecting, so a low-end decoder (Allwinner L10) is not pinned to 2560x1600 and overloaded
+
 * Sat Oct 10 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.1-1
 - Release 0.36.1: apply resolution changes after a resize (session alias resolution), floor the bitrate at the resolution suggestion, close evicted AOA streams, respect saved custom resolutions, and drop the encoder badge from the Android toolbar
 

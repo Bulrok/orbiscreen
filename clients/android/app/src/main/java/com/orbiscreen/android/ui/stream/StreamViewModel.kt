@@ -188,9 +188,18 @@ class StreamViewModel(
         )
     }
 
+    private fun clampToPanel(w: Int, h: Int): Pair<Int, Int> {
+        val (nativeW, nativeH, _) = detectNativeDisplay()
+        if (nativeW <= 0 || nativeH <= 0 || w <= 0 || h <= 0) return w to h
+        val longEdge = minOf(maxOf(w, h), nativeW)
+        val shortEdge = minOf(minOf(w, h), nativeH)
+        return maxOf(longEdge, shortEdge) to minOf(longEdge, shortEdge)
+    }
+
     private fun selectedResolution(): Pair<Int, Int> {
         val (nativeW, nativeH, _) = detectNativeDisplay()
-        return resolveSelectedResolution(prefs.resolutionPreset, nativeW, nativeH)
+        val (w, h) = resolveSelectedResolution(prefs.resolutionPreset, nativeW, nativeH)
+        return clampToPanel(w, h)
     }
 
     private suspend fun waitForAoaProxy() {
@@ -454,11 +463,13 @@ class StreamViewModel(
                 return
             }
             val (targetW, targetH) = selectedResolution()
-            val w = session?.width?.takeIf { it > 0 }
+            val sessionW = session?.width?.takeIf { it > 0 }
+            val sessionH = session?.height?.takeIf { it > 0 }
+            val w = sessionW
                 ?: targetW.takeIf { it > 0 }
                 ?: hostInfo?.width
                 ?: identity.width
-            val h = session?.height?.takeIf { it > 0 }
+            val h = sessionH
                 ?: targetH.takeIf { it > 0 }
                 ?: hostInfo?.height
                 ?: identity.height
@@ -469,10 +480,12 @@ class StreamViewModel(
                 encoder = session?.encoder ?: hostInfo?.encoder.orEmpty(),
                 version = hostInfo?.version.orEmpty(),
             )
-            inputDispatcher?.resize(
-                _state.value.displayWidth,
-                _state.value.displayHeight,
-            )
+            inputDispatcher?.resize(w, h)
+            if (session != null && targetW > 0 && targetH > 0 &&
+                (sessionW != targetW || sessionH != targetH)
+            ) {
+                updateDimensions(targetW, targetH)
+            }
             playerHolder.refreshSession = { reopenDisplaySession() }
             playerHolder.onResolutionFallback = { w, h -> updateDimensions(w, h) }
             playerHolder.udpKeyIssuer = { opened ->
@@ -669,18 +682,20 @@ class StreamViewModel(
 
     fun updateDimensions(w: Int, h: Int, label: String = "${w}x${h}", fps: Int = 60) {
         if (w > 0 && h > 0) {
-            val longEdge = maxOf(w, h)
-            val shortEdge = minOf(w, h)
-            prefs.resolutionPreset = "custom_${longEdge}x$shortEdge"
+            val (clampedW, clampedH) = clampToPanel(w, h)
+            val requested = maxOf(w, h) to minOf(w, h)
+            val finalLabel =
+                if (clampedW to clampedH == requested) label else "${clampedW}x${clampedH}"
+            prefs.resolutionPreset = "custom_${clampedW}x$clampedH"
             _state.value = _state.value.copy(
-                displayWidth = longEdge,
-                displayHeight = shortEdge,
-                resolutionLabel = label,
+                displayWidth = clampedW,
+                displayHeight = clampedH,
+                resolutionLabel = finalLabel,
             )
-            inputDispatcher?.resize(longEdge, shortEdge)
+            inputDispatcher?.resize(clampedW, clampedH)
             ensureInput().control("set_resolution", org.json.JSONObject().apply {
-                put("width", longEdge)
-                put("height", shortEdge)
+                put("width", clampedW)
+                put("height", clampedH)
                 put("fps", fps)
                 displaySessionId?.let { put("session", it) }
             })

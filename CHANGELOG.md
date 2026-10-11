@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.2] - 2026-10-11
+
+### Fixed
+- fix: size the Android stream to the tablet panel so a low-end decoder is not overloaded
+
+- A pinned host display overrides a client's requested resolution by design, so a low-end tablet (Allwinner L10, panel 1280x800 @ 59 Hz, H.264 decoder capped at 2048x2048 and 489,600 macroblocks/s) was pinned to 2560x1600 and its decoder ran about twice over its macroblock budget, producing blocky output at roughly 30 fps with 300-400 ms of latency. The Android client now clamps the selected resolution to the panel and, after connecting, applies it with a resize, so the stream always matches what the panel can decode and display
+- Version bumped to 0.36.2 across the Cargo workspace, Android (`versionCode` 161), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.1] - 2026-10-10
 
 ### Fixed
