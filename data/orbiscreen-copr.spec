@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.36.3
+%global version 0.36.4
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Sun Oct 11 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.4-1
+- Release 0.36.4: capture the KWin virtual output with the pointer hidden and composite the cursor in the daemon, so the pointer no longer ghosts on the host when it moves to another output
+
 * Sun Oct 11 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.3-1
 - Release 0.36.3: honor each client's requested resolution (drop the pin/SetDefaults forcing that caused a resize loop), stop the client resize-after-connect, and raise the AOA proxy stream cap from 16 to 48 to end the eviction storm
 

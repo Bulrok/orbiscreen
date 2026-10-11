@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.4] - 2026-10-11
+
+### Fixed
+- fix: composite the virtual-display cursor in the daemon so it cannot ghost on the host
+
+- The KWin virtual output was captured with `POINTER_EMBEDDED`, so KWin drew the cursor into the stream. When the pointer moved to another output, KWin did not repaint the virtual output, so the last captured frame kept the cursor and the 100 ms keepalive re-sent it, leaving a phantom pointer on the second display after the cursor had moved to the primary. The virtual output now captures with the pointer hidden (`POINTER_HIDDEN`) and the daemon composites the pointer itself from the client's pointer input, so the cursor follows the app, is clipped to the display, and disappears on touch, pen, or when the session ends
+- Version bumped to 0.36.4 across the Cargo workspace, Android (`versionCode` 163), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.3] - 2026-10-11
 
 ### Fixed

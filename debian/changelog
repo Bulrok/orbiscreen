@@ -1,3 +1,17 @@
+orbiscreen (0.36.4~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.36.4 for Ubuntu noble.
+  * Fix: the KWin virtual output was captured with the pointer embedded, so
+    KWin drew the cursor into the stream; when the pointer moved to another
+    output KWin did not repaint the virtual output and the 100 ms keepalive
+    re-sent the last frame, leaving a phantom cursor on the second display.
+    The virtual output now captures with the pointer hidden and the daemon
+    composites the cursor from the client's pointer input, so it follows the
+    app and disappears on touch, pen, or when the session ends.
+  * Bump version to 0.36.4 across all packages; Android versionCode 163.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Sun, 11 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.3~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.3 for Ubuntu noble.
