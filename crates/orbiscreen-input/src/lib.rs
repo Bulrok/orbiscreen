@@ -278,6 +278,14 @@ impl InputInjector {
         }
     }
 
+    pub fn apply_pointer_frame(&mut self, frame: Option<PointerFrame>) {
+        if let InjectorInner::Uinput(injector) = &mut self.inner {
+            if let Err(e) = injector.apply_pointer_frame(frame) {
+                tracing::warn!("uinput pointer frame refresh failed: {e}");
+            }
+        }
+    }
+
     pub async fn release_tools(&mut self) -> Result<(), InputError> {
         self.fallback_touch_down = false;
         self.inject_stylus(StylusEvent::Proximity {}).await

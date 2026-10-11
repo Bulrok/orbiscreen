@@ -205,6 +205,18 @@ impl UinputInjector {
             .build(&self.mk_name)?)
     }
 
+    pub fn apply_pointer_frame(
+        &mut self,
+        frame: Option<crate::PointerFrame>,
+    ) -> Result<(), InputError> {
+        if self.pointer_frame == frame {
+            return Ok(());
+        }
+        self.pointer_frame = frame;
+        self.mouse_keyboard = self.open_mouse_keyboard(self.width, self.height)?;
+        Ok(())
+    }
+
     fn open_touchscreen(&self, width: u32, height: u32) -> Result<UinputDevice, InputError> {
         let width_axis = AbsInfo::new(0, width.saturating_sub(1) as i32);
         let height_axis = AbsInfo::new(0, height.saturating_sub(1) as i32);

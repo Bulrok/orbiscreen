@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.36.4
+%global version 0.36.5
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Sun Oct 11 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.5-1
+- Release 0.36.5: refresh the absolute-pointer mapping when the display layout changes and sharpen the composited cursor sprite
+
 * Sun Oct 11 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.4-1
 - Release 0.36.4: capture the KWin virtual output with the pointer hidden and composite the cursor in the daemon, so the pointer no longer ghosts on the host when it moves to another output
 

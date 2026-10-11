@@ -1,3 +1,17 @@
+orbiscreen (0.36.5~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.36.5 for Ubuntu noble.
+  * Fix: the absolute pointer device captured the workspace geometry when the
+    session opened, so rearranging the displays left the mapping stale and the
+    injected pointer landed outside the virtual output (appearing on the
+    primary while the composited cursor stayed on the virtual one). The input
+    pump now re-reads the layout every couple of seconds and rebuilds the
+    pointer device when it changes.
+  * Sharpen the composited pointer sprite.
+  * Bump version to 0.36.5 across all packages; Android versionCode 164.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Sun, 11 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.4~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.4 for Ubuntu noble.

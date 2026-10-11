@@ -855,7 +855,27 @@ fn spawn_input_pump(
         let max_y = height.saturating_sub(1) as f64;
         let mut cursor_at = (max_x / 2.0, max_y / 2.0);
         let clamp = |x: f64, y: f64| (x.clamp(0.0, max_x), y.clamp(0.0, max_y));
-        while let Some(event) = input_rx.recv().await {
+        let mut cur_w = width;
+        let mut cur_h = height;
+        let mut frame_check = tokio::time::interval(std::time::Duration::from_secs(2));
+        frame_check.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
+        loop {
+            let event = tokio::select! {
+                maybe = input_rx.recv() => match maybe {
+                    Some(event) => event,
+                    None => break,
+                },
+                _ = frame_check.tick() => {
+                    if let Some(inj) = injector.as_mut() {
+                        inj.apply_pointer_frame(crate::pointer_frame_for(
+                            Some(&connector),
+                            cur_w,
+                            cur_h,
+                        ));
+                    }
+                    continue;
+                }
+            };
             let Some(inj) = injector.as_mut() else {
                 continue;
             };
@@ -891,6 +911,8 @@ fn spawn_input_pump(
                     let _ = inj.inject_pointer(PointerEvent::Move { x, y }).await;
                 }
                 IncomingInput::Resize { width, height } => {
+                    cur_w = width;
+                    cur_h = height;
                     inj.resize(width, height);
                 }
             }

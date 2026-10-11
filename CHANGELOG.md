@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.5] - 2026-10-11
+
+### Fixed
+- fix: refresh the pointer mapping when the display layout changes, and sharpen the composited cursor
+
+- The absolute pointer device captured the workspace geometry when the session opened, so rearranging the displays (which moves or resizes the virtual output) left the mapping stale: the injected pointer then landed outside the virtual output and appeared on the primary display while the composited cursor stayed on the virtual one. The input pump now re-reads the layout every couple of seconds and rebuilds the pointer device when it changes
+- The composited pointer sprite is now a full left-pointer arrow instead of the clipped one
+- Version bumped to 0.36.5 across the Cargo workspace, Android (`versionCode` 164), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.4] - 2026-10-11
 
 ### Fixed
