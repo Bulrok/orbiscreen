@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.7] - 2026-10-12
+
+### Fixed
+- fix: hide the virtual-display cursor while touch or pen is used
+
+- With the compositor cursor embedded (so an external mouse behaves like a normal extra monitor), the pointer stayed drawn on the virtual display while touch or pen was used. A touch or pen event now parks the host pointer just outside the virtual output, so KWin stops drawing the cursor there while the user is not looking at the host, and the external mouse brings it straight back when it moves across the virtual display
+- Version bumped to 0.36.7 across the Cargo workspace, Android (`versionCode` 166), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.6] - 2026-10-12
 
 ### Fixed

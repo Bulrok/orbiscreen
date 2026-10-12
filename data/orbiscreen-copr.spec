@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.36.6
+%global version 0.36.7
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Mon Oct 12 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.7-1
+- Release 0.36.7: hide the virtual-display cursor while touch or pen is used by parking the host pointer just outside the output
+
 * Mon Oct 12 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.6-1
 - Release 0.36.6: capture the KWin virtual output with the compositor cursor embedded again so an external mouse behaves like a normal extra monitor, and remove the composited-cursor overlay
 
