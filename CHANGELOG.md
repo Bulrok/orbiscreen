@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.0] - 2026-10-12
+
+### Fixed
+- fix: keep the external-mouse cursor on the virtual display while hiding it during touch and pen
+
+- v0.36.9 hid the cursor with `POINTER_HIDDEN` and composited it from the client's pointer events, which removed the external-mouse cursor entirely. The compositor cursor is embedded again (so an external mouse behaves like a normal extra monitor) and, instead of moving the pointer on every event, a pointer to touch/pen switch parks the host pointer just outside the virtual output once per switch, so the cursor stops being drawn on the virtual display during touch or pen while an external mouse brings it straight back
+- The composited-cursor overlay is removed again
+- Dependency: `quinn-proto` was pinned to `0.11.16`, which carries five RUSTSEC advisories (RUSTSEC-2026-0338 through RUSTSEC-2026-0342, all fixed in `0.11.18`). The pin is lifted to `0.11.18` and the lockfile resolves to `0.11.19`, restoring the `cargo-deny` advisories gate that was failing CI and the tag Release Matrix
+- Version bumped to 0.37.0 across the Cargo workspace, Android (`versionCode` 170), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.9] - 2026-10-12
 
 ### Fixed

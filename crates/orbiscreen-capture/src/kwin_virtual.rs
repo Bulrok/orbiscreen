@@ -21,9 +21,8 @@ use wayland_protocols_plasma::screencast::v1::client::zkde_screencast_stream_uns
 use wayland_protocols_plasma::screencast::v1::client::zkde_screencast_unstable_v1::ZkdeScreencastUnstableV1;
 
 use super::{sample_to_captured_frame, CaptureError, CapturedFrame};
-use crate::cursor_overlay::CursorOverlay;
 
-const POINTER_HIDDEN: u32 = 1;
+const POINTER_EMBEDDED: u32 = 2;
 
 const FRAME_CHANNEL_CAPACITY: usize = 8;
 
@@ -662,7 +661,6 @@ pub struct KwinVirtualCapture {
     ended_notify: Arc<Notify>,
     event_thread: Option<std::thread::JoinHandle<()>>,
     _damage_pump: super::damage_pump::DamagePumpHandle,
-    cursor_overlay: Arc<CursorOverlay>,
 }
 
 impl KwinVirtualCapture {
@@ -770,7 +768,7 @@ impl KwinVirtualCapture {
                     width,
                     height,
                     1.0,
-                    POINTER_HIDDEN,
+                    POINTER_EMBEDDED,
                     &session.queue.handle(),
                     shared.clone(),
                 )
@@ -780,7 +778,7 @@ impl KwinVirtualCapture {
                     width,
                     height,
                     1.0,
-                    POINTER_HIDDEN,
+                    POINTER_EMBEDDED,
                     &session.queue.handle(),
                     shared.clone(),
                 )
@@ -948,12 +946,7 @@ impl KwinVirtualCapture {
             ended_notify,
             event_thread: Some(event_thread),
             _damage_pump: damage_pump,
-            cursor_overlay: Arc::new(CursorOverlay::default()),
         })
-    }
-
-    pub fn cursor_overlay(&self) -> Arc<CursorOverlay> {
-        Arc::clone(&self.cursor_overlay)
     }
 
     pub fn connector_name(&self) -> &str {
@@ -979,14 +972,7 @@ impl KwinVirtualCapture {
             tokio::select! {
                 frame = rx.recv() => {
                     return match frame {
-                        Some(mut frame) => {
-                            self.cursor_overlay.composite(
-                                &mut frame.data,
-                                frame.width,
-                                frame.height,
-                            );
-                            Ok(frame)
-                        }
+                        Some(frame) => Ok(frame),
                         None => Err(CaptureError::Io(
                             "KWin virtual output pipeline closed".into(),
                         )),

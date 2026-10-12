@@ -1,3 +1,17 @@
+orbiscreen (0.37.0~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.0 for Ubuntu noble.
+  * Fix: v0.36.9 hid the cursor with POINTER_HIDDEN and composited it from the
+    client's pointer events, which removed the external-mouse cursor entirely.
+    The compositor cursor is embedded again (so an external mouse behaves like
+    a normal extra monitor) and, instead of moving the pointer on every event,
+    a pointer to touch/pen switch parks the host pointer just outside the
+    virtual output once per switch so the cursor is not drawn during touch or
+    pen. The composited-cursor overlay is removed again.
+  * Bump version to 0.37.0 across all packages; Android versionCode 170.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Mon, 12 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.9~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.9 for Ubuntu noble.

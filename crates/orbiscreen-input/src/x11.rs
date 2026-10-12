@@ -217,6 +217,34 @@ impl UinputInjector {
         Ok(())
     }
 
+    pub fn park_cursor(&mut self) -> Result<(), InputError> {
+        let Some(frame) = self.pointer_frame else {
+            return Ok(());
+        };
+        let max_x = frame.workspace_width.saturating_sub(1) as i32;
+        let max_y = frame.workspace_height.saturating_sub(1) as i32;
+        let want_x = if frame.origin_x > 0 {
+            frame.origin_x - 1
+        } else {
+            frame.origin_x + self.width as i32 + 1
+        };
+        let gx = want_x.clamp(0, max_x);
+        let gy = (frame.origin_y + self.height as i32 / 2).clamp(0, max_y);
+        let inside = gx >= frame.origin_x && gx < frame.origin_x + self.width as i32;
+        if inside {
+            return Ok(());
+        }
+        let events = vec![
+            AbsEvent::new(Abs::X, gx).into(),
+            AbsEvent::new(Abs::Y, gy).into(),
+            SynEvent::new(Syn::REPORT).into(),
+        ];
+        self.mouse_keyboard.write_events(&events)?;
+        self.cursor_x = f64::from(gx - frame.origin_x);
+        self.cursor_y = f64::from(gy - frame.origin_y);
+        Ok(())
+    }
+
     fn open_touchscreen(&self, width: u32, height: u32) -> Result<UinputDevice, InputError> {
         let width_axis = AbsInfo::new(0, width.saturating_sub(1) as i32);
         let height_axis = AbsInfo::new(0, height.saturating_sub(1) as i32);
