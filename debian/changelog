@@ -1,3 +1,17 @@
+orbiscreen (0.36.8~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.36.8 for Ubuntu noble.
+  * Revert: v0.36.7 parked the absolute pointer on every touch and pen event
+    so the cursor would not linger on the virtual display. That churn
+    regressed the live setup (stuttering with a low frame rate, AOA
+    video-lane congestion with repeated re-attaches, and a displaced,
+    interfering pointer), so it is reverted. The compositor cursor stays
+    embedded and the external mouse behaves like a normal extra monitor again
+    while touch and pen drive the confined virtual pointer.
+  * Bump version to 0.36.8 across all packages; Android versionCode 167.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Mon, 12 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.7~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.7 for Ubuntu noble.

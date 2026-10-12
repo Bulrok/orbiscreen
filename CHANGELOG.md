@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.8] - 2026-10-12
+
+### Fixed
+- revert: touch/pen no longer parks the host pointer, which regressed the stream
+
+- v0.36.7 parked the absolute pointer on every touch and pen event so the cursor would not linger on the virtual display. That churn regressed the live setup: stuttering with low frame rate, AOA video-lane congestion with repeated re-attaches, and a displaced, interfering pointer. The behaviour is reverted, so the compositor cursor stays embedded and the external mouse behaves like a normal extra monitor again while touch and pen drive the confined virtual pointer
+- Version bumped to 0.36.8 across the Cargo workspace, Android (`versionCode` 167), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.7] - 2026-10-12
 
 ### Fixed

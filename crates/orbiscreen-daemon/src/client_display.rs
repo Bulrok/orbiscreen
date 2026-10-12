@@ -880,11 +880,9 @@ fn spawn_input_pump(
                     let _ = inj.inject_key(k).await;
                 }
                 IncomingInput::Stylus(s) => {
-                    inj.park_cursor();
                     let _ = inj.inject_stylus(s).await;
                 }
                 IncomingInput::Touch(t) => {
-                    inj.park_cursor();
                     let _ = inj.inject_touch(t).await;
                 }
                 IncomingInput::RawPointer { x, y } => {

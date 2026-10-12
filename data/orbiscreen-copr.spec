@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.36.7
+%global version 0.36.8
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Mon Oct 12 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.8-1
+- Release 0.36.8: revert parking the host pointer on touch/pen, which regressed the stream (stutter, AOA video-lane congestion, displaced pointer)
+
 * Mon Oct 12 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.7-1
 - Release 0.36.7: hide the virtual-display cursor while touch or pen is used by parking the host pointer just outside the output
 
