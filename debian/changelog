@@ -1,3 +1,17 @@
+orbiscreen (0.36.9~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.36.9 for Ubuntu noble.
+  * Fix: v0.36.7 parked the host pointer on every touch and pen event, which
+    regressed the stream. The KWin virtual output now captures with the cursor
+    hidden (POINTER_HIDDEN) and the daemon composites the pointer from the
+    client's pointer events, hiding it on touch or pen, so the cursor no
+    longer lingers on the virtual display and no per-event pointer motion is
+    injected.
+  * Restore the composited pointer sprite and its clipping tests.
+  * Bump version to 0.36.9 across all packages; Android versionCode 168.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Mon, 12 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.8~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.8 for Ubuntu noble.

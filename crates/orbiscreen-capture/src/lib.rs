@@ -1,4 +1,5 @@
 pub mod capabilities;
+pub mod cursor_overlay;
 pub mod damage_pump;
 pub mod kwin_virtual;
 pub mod wayland;

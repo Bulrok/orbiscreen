@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.9] - 2026-10-12
+
+### Fixed
+- fix: hide the virtual-display cursor during touch and pen without moving the host pointer
+
+- v0.36.7 tried to hide the cursor by parking the host pointer on every touch and pen event, which regressed the stream (stutter, AOA video-lane congestion, displaced pointer). The KWin virtual output now captures with the cursor hidden (`POINTER_HIDDEN`) and the daemon composites the pointer itself: it follows the client's pointer events (trackpad or mouse mode) and is hidden on touch or pen, so the cursor no longer lingers on the virtual display and no per-event pointer motion is injected
+- The composited pointer sprite and its clipping tests are restored
+- Version bumped to 0.36.9 across the Cargo workspace, Android (`versionCode` 168), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.8] - 2026-10-12
 
 ### Fixed

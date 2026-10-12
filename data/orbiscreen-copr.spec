@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.36.8
+%global version 0.36.9
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Mon Oct 12 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.9-1
+- Release 0.36.9: capture the KWin virtual output with the cursor hidden and composite the pointer in the daemon, hidden during touch and pen, without moving the host pointer
+
 * Mon Oct 12 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.36.8-1
 - Release 0.36.8: revert parking the host pointer on touch/pen, which regressed the stream (stutter, AOA video-lane congestion, displaced pointer)
 
