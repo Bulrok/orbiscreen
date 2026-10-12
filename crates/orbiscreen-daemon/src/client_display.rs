@@ -607,7 +607,6 @@ async fn open_session(
         }
     };
     let capture = Arc::new(capture);
-    let cursor_overlay = capture.cursor_overlay();
     let connector = capture.connector_name().to_string();
     let (actual_w, actual_h) = capture.dimensions();
     info!(connector = %connector, width = actual_w, height = actual_h, "client virtual output created");
@@ -705,7 +704,6 @@ async fn open_session(
         connector.clone(),
         name.clone(),
         key.clone(),
-        cursor_overlay,
     );
 
     let id = next_id();
@@ -817,7 +815,6 @@ fn spawn_input_pump(
     connector: String,
     client_name: String,
     client_key: Option<String>,
-    cursor: Arc<orbiscreen_capture::cursor_overlay::CursorOverlay>,
 ) -> tokio::task::JoinHandle<()> {
     tokio::spawn(async move {
         let label = client_key
@@ -851,10 +848,6 @@ fn spawn_input_pump(
                 None
             }
         };
-        let max_x = width.saturating_sub(1) as f64;
-        let max_y = height.saturating_sub(1) as f64;
-        let mut cursor_at = (max_x / 2.0, max_y / 2.0);
-        let clamp = |x: f64, y: f64| (x.clamp(0.0, max_x), y.clamp(0.0, max_y));
         let mut cur_w = width;
         let mut cur_h = height;
         let mut frame_check = tokio::time::interval(std::time::Duration::from_secs(2));
@@ -881,33 +874,18 @@ fn spawn_input_pump(
             };
             match event {
                 IncomingInput::Pointer(p) => {
-                    match &p {
-                        PointerEvent::Move { x, y } => {
-                            cursor_at = clamp(*x, *y);
-                            cursor.place(cursor_at.0 as i32, cursor_at.1 as i32);
-                        }
-                        PointerEvent::RelativeMove { dx, dy } => {
-                            cursor_at = clamp(cursor_at.0 + dx, cursor_at.1 + dy);
-                            cursor.place(cursor_at.0 as i32, cursor_at.1 as i32);
-                        }
-                        PointerEvent::Button { .. } | PointerEvent::Wheel { .. } => {}
-                    }
                     let _ = inj.inject_pointer(p).await;
                 }
                 IncomingInput::Key(k) => {
                     let _ = inj.inject_key(k).await;
                 }
                 IncomingInput::Stylus(s) => {
-                    cursor.hide();
                     let _ = inj.inject_stylus(s).await;
                 }
                 IncomingInput::Touch(t) => {
-                    cursor.hide();
                     let _ = inj.inject_touch(t).await;
                 }
                 IncomingInput::RawPointer { x, y } => {
-                    cursor_at = clamp(x, y);
-                    cursor.place(cursor_at.0 as i32, cursor_at.1 as i32);
                     let _ = inj.inject_pointer(PointerEvent::Move { x, y }).await;
                 }
                 IncomingInput::Resize { width, height } => {

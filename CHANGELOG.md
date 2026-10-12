@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.36.6] - 2026-10-12
+
+### Fixed
+- fix: let the compositor draw the virtual-display cursor again so an external mouse behaves like a normal extra monitor
+
+- v0.36.4 hid the compositor cursor and composited a client-driven pointer instead, which removed the cursor ghost but also made an external mouse invisible on the virtual display. Capturing with the compositor cursor embedded (`POINTER_EMBEDDED`) is restored, so the real pointer shows on the virtual display and moves in and out of it like any other monitor, while touch and pen still drive the confined virtual pointer from the app
+- The composited-cursor overlay and its wiring are removed
+- Version bumped to 0.36.6 across the Cargo workspace, Android (`versionCode` 165), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.36.5] - 2026-10-11
 
 ### Fixed

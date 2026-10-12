@@ -1,3 +1,17 @@
+orbiscreen (0.36.6~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.36.6 for Ubuntu noble.
+  * Fix: v0.36.4 hid the compositor cursor and composited a client-driven
+    pointer, which removed the cursor ghost but also made an external mouse
+    invisible on the virtual display. The compositor cursor is embedded again
+    (POINTER_EMBEDDED) so the real pointer shows and moves in and out of the
+    virtual output like any other monitor, while touch and pen still drive the
+    confined virtual pointer from the app. The composited-cursor overlay is
+    removed.
+  * Bump version to 0.36.6 across all packages; Android versionCode 165.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Mon, 12 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.36.5~ubuntunoble1) noble; urgency=medium
 
   * Release 0.36.5 for Ubuntu noble.
