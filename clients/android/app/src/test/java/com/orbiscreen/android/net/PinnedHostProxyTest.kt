@@ -17,7 +17,7 @@ class PinnedHostProxyTest {
 
     @Test
     fun ordinaryInputAndControlPathsStayAllowed() {
-        for (path in listOf("/input", "/api/control", "/api/session", "/stream")) {
+        for (path in listOf("/input", "/api/control", "/api/session", "/stream", "/au")) {
             assertTrue("$path must stay allowed", pinnedProxyAllows(path))
         }
     }

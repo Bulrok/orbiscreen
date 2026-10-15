@@ -151,6 +151,7 @@ fun StreamScreen(
         usbAoa = usb?.usesAoa == true,
         usbHttp = usb != null && usb.usesAoa != true,
         exo = player != null,
+        lanHttp = usb?.overLan == true,
     )
     val surfacePlayer = udp ?: usb
     var showControls by remember { mutableStateOf(false) }
