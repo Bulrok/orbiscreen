@@ -20,6 +20,26 @@ import kotlin.concurrent.thread
 
 internal fun pinnedProxyAllows(path: String): Boolean = path in PINNED_PROXY_PATHS
 
+/**
+ * Rewrites a downstream upgrade request head for the host. The client authenticates to the proxy
+ * with `Authorization: Bearer <localToken>`; forwarding that header made the host, which reads the
+ * bearer header before any `?token=`, reject every `/input/ws` upgrade with 401, so all touch and
+ * pen input fell back to one HTTP request per event. The header is replaced with the host credential.
+ */
+internal fun withHostCredential(rawHead: ByteArray, credential: String): String {
+    val lines = String(rawHead, Charsets.ISO_8859_1).split("\r\n")
+    require(lines.isNotEmpty() && lines[0].split(' ').size == 3) { "malformed request line" }
+    return buildString {
+        append(lines[0]).append("\r\n")
+        for (line in lines.drop(1)) {
+            if (line.isEmpty()) continue
+            if (line.substringBefore(':').trim().equals("authorization", ignoreCase = true)) continue
+            append(line).append("\r\n")
+        }
+        append("Authorization: Bearer ").append(credential).append("\r\n\r\n")
+    }
+}
+
 private const val MAX_UPGRADE_HEAD_BYTES = 64 * 1024
 
 private val PINNED_PROXY_PATHS = setOf(
@@ -186,7 +206,7 @@ class PinnedHostProxy internal constructor(
         }
         val upstreamIn = ssl.inputStream
         val upstreamOut = ssl.outputStream
-        upstreamOut.write(injectCredential(rawHead).toByteArray(Charsets.ISO_8859_1))
+        upstreamOut.write(withHostCredential(rawHead, credential).toByteArray(Charsets.ISO_8859_1))
         upstreamOut.flush()
 
         downstream.soTimeout = 0
@@ -220,20 +240,6 @@ class PinnedHostProxy internal constructor(
         } finally {
             up.interrupt()
             runCatching { ssl.close() }
-        }
-    }
-
-    private fun injectCredential(rawHead: ByteArray): String {
-        val text = String(rawHead, Charsets.ISO_8859_1)
-        val end = text.indexOf("\r\n")
-        val requestLine = text.substring(0, end)
-        val parts = requestLine.split(' ')
-        require(parts.size == 3) { "malformed request line" }
-        val target = parts[1]
-        val sep = if (target.contains('?')) '&' else '?'
-        return buildString {
-            append(parts[0]).append(' ').append(target).append(sep).append("token=").append(credential)
-            append("\r\n").append(text.substring(end + 2))
         }
     }
 
