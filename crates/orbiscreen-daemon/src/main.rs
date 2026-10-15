@@ -2734,7 +2734,6 @@ async fn run_secondary_display_session(
         let started = std::time::Instant::now();
         let mut last_pts_ns: u64 = 0;
         let mut keepalive_frame: Option<(u32, u32, Vec<u8>)> = None;
-        let mut last_snapshot: Option<std::time::Instant> = None;
         loop {
             let outcome = match tokio::time::timeout(KEEPALIVE, source.next_frame()).await {
                 Ok(outcome) => outcome,
@@ -2758,9 +2757,17 @@ async fn run_secondary_display_session(
             match outcome {
                 SourceOutcome::Frame(frame) => {
                     let (width, height) = (frame.width, frame.height);
-                    if last_snapshot.is_none_or(|t| t.elapsed() >= KEEPALIVE) {
-                        keepalive_frame = Some((width, height, frame.data.to_vec()));
-                        last_snapshot = Some(std::time::Instant::now());
+                    // Keep the newest frame for the keepalive. Refreshing it only every 100 ms
+                    // meant that when the screen went idle the keepalive re-sent a frame up to
+                    // 100 ms older than the last real one, so the cursor snapped back to an
+                    // earlier position whenever movement stopped. Reuse the buffer to avoid
+                    // reallocating a full frame each time.
+                    match &mut keepalive_frame {
+                        Some((w, h, buf)) if buf.len() == frame.data.len() => {
+                            buf.copy_from_slice(&frame.data[..]);
+                            (*w, *h) = (width, height);
+                        }
+                        _ => keepalive_frame = Some((width, height, frame.data.to_vec())),
                     }
                     let now_ns = u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX);
                     let pts_ns = now_ns.max(last_pts_ns.saturating_add(1_000));
@@ -3185,8 +3192,7 @@ async fn run_start(
         const KEEPALIVE: std::time::Duration = std::time::Duration::from_millis(100);
         let started = std::time::Instant::now();
         let mut last_pts_ns: u64 = 0;
-        let mut keepalive_frame: Option<(u32, u32, Arc<[u8]>)> = None;
-        let mut last_snapshot: Option<std::time::Instant> = None;
+        let mut keepalive_frame: Option<(u32, u32, Vec<u8>)> = None;
         loop {
             let outcome = match tokio::time::timeout(KEEPALIVE, source.next_frame()).await {
                 Ok(outcome) => outcome,
@@ -3197,7 +3203,7 @@ async fn run_start(
                     let now_ns = u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX);
                     let pts_ns = now_ns.max(last_pts_ns.saturating_add(1_000));
                     last_pts_ns = pts_ns;
-                    if let Err(e) = encoder.push_frame(data.as_ref(), *width, *height, pts_ns) {
+                    if let Err(e) = encoder.push_frame(&data[..], *width, *height, pts_ns) {
                         match e {
                             orbiscreen_encode::EncodeError::Flushing
                             | orbiscreen_encode::EncodeError::Eos => {
@@ -3223,9 +3229,17 @@ async fn run_start(
                 SourceOutcome::Frame(frame) => {
                     let _ = fc.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                     let (width, height) = (frame.width, frame.height);
-                    if last_snapshot.is_none_or(|t| t.elapsed() >= KEEPALIVE) {
-                        keepalive_frame = Some((width, height, Arc::from(&frame.data[..])));
-                        last_snapshot = Some(std::time::Instant::now());
+                    // Keep the newest frame for the keepalive. Refreshing it only every 100 ms
+                    // meant that when the screen went idle the keepalive re-sent a frame up to
+                    // 100 ms older than the last real one, so the cursor snapped back to an
+                    // earlier position whenever movement stopped. Reuse the buffer to avoid
+                    // reallocating a full frame each time.
+                    match &mut keepalive_frame {
+                        Some((w, h, buf)) if buf.len() == frame.data.len() => {
+                            buf.copy_from_slice(&frame.data[..]);
+                            (*w, *h) = (width, height);
+                        }
+                        _ => keepalive_frame = Some((width, height, frame.data.to_vec())),
                     }
                     let now_ns = u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX);
                     let pts_ns = now_ns.max(last_pts_ns.saturating_add(1_000));

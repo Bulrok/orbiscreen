@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- fix: keep the newest frame for the idle keepalive so the cursor no longer snaps back when movement stops
+
+On the shared-display paths (`run_start`, `run_secondary_display_session`) the capture pump re-sends a keepalive frame when no new frame arrives within 100 ms, but the stored keepalive frame was refreshed at most once per 100 ms. When the screen went idle (Mutter stops delivering frames once the pointer stops) the keepalive re-encoded a frame up to ~100 ms older than the last real one, so the embedded cursor visibly snapped back to an earlier position and stayed there until the next damage. The pump now keeps the newest frame on every frame, reusing the buffer (one memcpy per frame, under 1 ms at 2560x1536), matching the per-client pump in `client_display.rs`.
+
+- Reported in [#98](https://github.com/shadow-x78/orbiscreen/issues/98) by [@Bulrok](https://github.com/Bulrok).
+
 ## [v0.37.1] - 2026-10-15
 
 ### Fixed
