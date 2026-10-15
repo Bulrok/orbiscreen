@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- fix: tear down Android network clients off the main thread to avoid `NetworkOnMainThreadException`
+
+Closing a Conscrypt TLS socket flushes its outgoing queue, a blocking network write, and evicting an OkHttp connection pool closes such sockets. `PinnedHostProxy.close()`, `PlayerHolder.shutdownHttpClient()` and the `healthHttp` eviction in `StreamViewModel.onCleared()` can all run on the main thread, where StrictMode kills the process (observed on v0.31.2 on Wi-Fi connect/teardown, stack through `ConscryptEngineSocket.close` on `Dispatchers.Main.immediate`). The teardown now runs on a short-lived daemon thread when called from the main looper.
+
+- Reported in [#94](https://github.com/shadow-x78/orbiscreen/issues/94) by [@Bulrok](https://github.com/Bulrok).
+
 ## [v0.37.1] - 2026-10-15
 
 ### Fixed

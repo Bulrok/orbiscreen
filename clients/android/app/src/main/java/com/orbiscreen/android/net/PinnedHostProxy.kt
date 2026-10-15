@@ -267,10 +267,20 @@ class PinnedHostProxy internal constructor(
     }
 
     override fun close() {
-        server.close()
-        client.dispatcher.cancelAll()
-        sockets.forEach { runCatching { it.close() } }
-        workers.shutdownNow()
-        client.connectionPool.evictAll()
+        // Closing TLS sockets and evicting the pool are blocking network writes (Conscrypt flushes
+        // its outgoing queue); callers can be on the main thread, where Android throws
+        // NetworkOnMainThreadException, so tear down off the main looper.
+        val teardown = Runnable {
+            runCatching { server.close() }
+            runCatching { client.dispatcher.cancelAll() }
+            sockets.forEach { runCatching { it.close() } }
+            runCatching { workers.shutdownNow() }
+            runCatching { client.connectionPool.evictAll() }
+        }
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            thread(name = "OrbiPinnedProxyClose", isDaemon = true) { teardown.run() }
+        } else {
+            teardown.run()
+        }
     }
 }

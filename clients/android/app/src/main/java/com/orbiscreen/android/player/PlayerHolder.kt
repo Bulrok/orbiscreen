@@ -139,9 +139,19 @@ class PlayerHolder(
             .also { okHttp = it }
 
     private fun shutdownHttpClient() {
-        okHttp?.dispatcher?.executorService?.shutdown()
-        okHttp?.connectionPool?.evictAll()
+        val client = okHttp ?: return
         okHttp = null
+        // Evicting the pool closes TLS sockets (blocking network writes); callers can be on the
+        // main thread, which Android rejects with NetworkOnMainThreadException.
+        val teardown = Runnable {
+            runCatching { client.dispatcher.executorService.shutdown() }
+            runCatching { client.connectionPool.evictAll() }
+        }
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            Thread(teardown, "OrbiPlayerRelease").apply { isDaemon = true }.start()
+        } else {
+            teardown.run()
+        }
     }
 
     private val probeHttp: OkHttpClient by lazy {
