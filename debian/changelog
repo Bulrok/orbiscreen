@@ -1,3 +1,19 @@
+orbiscreen (0.37.2~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.2 for Ubuntu noble.
+  * Fix: closing a Conscrypt TLS socket flushes its outgoing queue (a
+    blocking network write) and evicting an OkHttp pool closes such sockets;
+    PinnedHostProxy.close(), PlayerHolder.shutdownHttpClient() and the
+    healthHttp eviction in StreamViewModel.onCleared() can all run on the
+    main thread, where StrictMode kills the process with
+    NetworkOnMainThreadException. The teardown now runs on a short-lived
+    daemon thread when called from the main looper.
+  * Reported and fixed by @Bulrok in #94 (PR #103, merged); the issue is
+    left open pending confirmation.
+  * Bump version to 0.37.2 across all packages; Android versionCode 172.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Thu, 15 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.1~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.1 for Ubuntu noble.

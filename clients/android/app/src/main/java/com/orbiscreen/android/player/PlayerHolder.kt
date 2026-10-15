@@ -141,8 +141,6 @@ class PlayerHolder(
     private fun shutdownHttpClient() {
         val client = okHttp ?: return
         okHttp = null
-        // Evicting the pool closes TLS sockets (blocking network writes); callers can be on the
-        // main thread, which Android rejects with NetworkOnMainThreadException.
         val teardown = Runnable {
             runCatching { client.dispatcher.executorService.shutdown() }
             runCatching { client.connectionPool.evictAll() }

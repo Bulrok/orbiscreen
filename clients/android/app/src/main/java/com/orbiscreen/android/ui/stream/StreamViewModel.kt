@@ -733,7 +733,6 @@ class StreamViewModel(
     override fun onCleared() {
         disconnect()
         inputDispatcher?.release()
-        // onCleared runs on the main thread; evicting closes TLS sockets, which is network I/O.
         Thread({ runCatching { healthHttp.connectionPool.evictAll() } }, "OrbiHealthRelease")
             .apply { isDaemon = true }.start()
         super.onCleared()

@@ -267,9 +267,6 @@ class PinnedHostProxy internal constructor(
     }
 
     override fun close() {
-        // Closing TLS sockets and evicting the pool are blocking network writes (Conscrypt flushes
-        // its outgoing queue); callers can be on the main thread, where Android throws
-        // NetworkOnMainThreadException, so tear down off the main looper.
         val teardown = Runnable {
             runCatching { server.close() }
             runCatching { client.dispatcher.cancelAll() }
