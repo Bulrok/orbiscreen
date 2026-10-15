@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- fix: disable Nagle on the Android pinned-proxy sockets so Wi-Fi video no longer arrives in ~40 ms clumps
+
+`PinnedHostProxy` relays each upstream read to the player over a loopback socket and flushes, often as a few bytes of chunk framing followed by a full buffer. With Nagle on, the small write waited for the reader's delayed ACK (~40 ms on Android), so a perfectly paced 60 fps stream reached the player in clumps of 3-4 frames about every 55 ms. A per-read trace showed 2 gaps over 25 ms on the proxy's upstream reads against 235 on the player's loopback reads over 20 s. With `tcpNoDelay` on the accepted loopback sockets, a 60 s testufo run at 2560x1536@60 went from p50/p95/p99 frame intervals of 7/56/62 ms with 589 stalls over 42 ms to 17/24/28 ms with none (measured with the LAN `/au` player proposed in #95; the MPEG-TS `/stream` path goes through the same relay).
+
+- Hardening, same class: the `/input/ws` relay's upstream socket and the host's HTTPS listener (`NoDelayAcceptor`, matching the AOA proxy) now set `TCP_NODELAY` too; neither changed the measurements on their own
+- Reported in [#96](https://github.com/shadow-x78/orbiscreen/issues/96) by [@Bulrok](https://github.com/Bulrok).
+
 ## [v0.37.1] - 2026-10-15
 
 ### Fixed
