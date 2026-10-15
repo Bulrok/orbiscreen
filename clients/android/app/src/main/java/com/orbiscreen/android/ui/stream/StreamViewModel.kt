@@ -333,7 +333,8 @@ class StreamViewModel(
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                android.util.Log.w("OrbiLogin", "login failed: ${e.message}", e)
                 _login.value = _login.value.copy(stage = LoginStage.Failed,
                     message = "Secure connection failed. Check host address, TLS port, and certificate. If the host was reinstalled, forget its saved login and verify the new fingerprint.")
             }
@@ -365,7 +366,8 @@ class StreamViewModel(
                 error("Pairing timed out")
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                android.util.Log.w("OrbiLogin", "pairing failed: ${e.message}", e)
                 _login.value = _login.value.copy(stage = LoginStage.Failed,
                     message = "Pairing failed, expired, or was denied. Retry and approve on the host. If approval was already claimed, request pairing again.")
             }
@@ -452,7 +454,12 @@ class StreamViewModel(
             } else {
                 null
             }
-            check(!isLan || session != null) { "Authenticated display session could not be opened" }
+            if (isLan && session == null) {
+                android.util.Log.w(
+                    "OrbiLogin",
+                    "no per-client display session from host; using the default display",
+                )
+            }
             displaySessionId = session?.id
             inputDispatcher?.sessionId = session?.id
             val hostInfo = info.second

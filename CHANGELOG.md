@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.1] - 2026-10-15
+
+### Fixed
+- fix: fall back to the shared display over Wi-Fi on hosts without per-client displays
+
+On a GNOME host the daemon has no per-client displays, so `POST /api/session` answers `501 per-client displays are not available`. The Android client treated the missing session as fatal on LAN (`check(!isLan || session != null)`), and the generic login handler reported it as a pairing or TLS failure, so every Wi-Fi connection attempt failed with "Pairing failed, expired, or was denied" while the host had in fact approved the pairing — each retry re-paired from scratch and piled up duplicate approval requests. The LAN path now tolerates the missing session exactly like the USB/loopback path and falls back to the host's default shared display.
+
+- The two generic login catch blocks (`beginLogin`, `confirmFingerprint`) now log the underlying exception with `android.util.Log.w`, so a transport or session failure is no longer hidden behind the pairing error text
+- Dependency: `rustls` 0.23.45 carried four RUSTSEC advisories (RUSTSEC-2026-0346 through RUSTSEC-2026-0349, all fixed in 0.23.46); the lockfile is updated to `0.23.46` so the `cargo-deny` advisories gate stays green
+- Reported and diagnosed by [@Bulrok](https://github.com/Bulrok) in [#93](https://github.com/shadow-x78/orbiscreen/issues/93), who traced the 501 to the fatal `check` on LAN, verified that the daemon fully serves a session-less paired Wi-Fi client (`/stream` and `/au` 200, `/input` accepted, unauthenticated still 401), and provided the fix. The issue is intentionally left open.
+- Version bumped to 0.37.1 across the Cargo workspace, Android (`versionCode` 171), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.37.0] - 2026-10-12
 
 ### Fixed

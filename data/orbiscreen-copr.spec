@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.37.0
+%global version 0.37.1
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Thu Oct 15 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.1-1
+- Release 0.37.1: fall back to the shared display over Wi-Fi on hosts without per-client displays (GNOME 501), and log the real login exception; reported by @Bulrok in #93
+
 * Mon Oct 12 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.0-1
 - Release 0.37.0: embed the compositor cursor again so the external mouse works, and hide it during touch/pen by parking the host pointer once per switch
 
