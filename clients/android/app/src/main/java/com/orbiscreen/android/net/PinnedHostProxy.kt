@@ -24,6 +24,7 @@ private const val MAX_UPGRADE_HEAD_BYTES = 64 * 1024
 
 private val PINNED_PROXY_PATHS = setOf(
     "/stream",
+    "/au",
     "/input",
     "/input/ws",
     "/api/control",

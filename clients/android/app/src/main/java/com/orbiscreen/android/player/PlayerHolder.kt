@@ -291,6 +291,29 @@ class PlayerHolder(
             return null
         }
 
+        // No UDP target (hosts without per-client sessions, e.g. GNOME, never issue a UDP key):
+        // pull the raw Annex-B /au stream straight into MediaCodec, as the USB HTTP fallback does,
+        // instead of ExoPlayer's MPEG-TS pipeline, which buffers before it renders.
+        run {
+            val au = UsbPlayer(stats) { postIdr() }
+            au.onResolutionFallback = { w, h -> onResolutionFallback?.invoke(w, h) }
+            au.overLan = true
+            val started = kotlinx.coroutines.withContext(Dispatchers.IO) {
+                au.startHttp(host, port, token, session?.id, streamW, streamH)
+            }
+            if (started) {
+                android.util.Log.i("OrbiPlayer", "LAN Annex-B player started kind=HttpAu")
+                _usb.value = au
+                _udp.value = null
+                _player.value = null
+                scope.launch {
+                    au.event.collect { ev -> _event.value = ev }
+                }
+                return null
+            }
+            android.util.Log.w("OrbiPlayer", "LAN /au failed; falling back to MPEG-TS")
+        }
+
         val player = try {
             val headers = mutableMapOf<String, String>()
             if (token.isNotBlank()) {

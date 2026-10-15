@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- fix: play Wi-Fi video through the low-latency Annex-B `/au` path on hosts without per-client sessions
+
+On hosts without per-client display sessions (GNOME/portal), the client never gets a UDP key (`isLan && session != null`, and the host's `may_mint_udp_key` requires a session), so Wi-Fi video fell back to ExoPlayer's buffered MPEG-TS `/stream`. `/au` already serves a paired, session-less client from the shared `video_tx`, but the LAN path never used it, and the pinned proxy's allowlist rejected it ("unexpected end of stream"). `/au` is now allowed through `PinnedHostProxy`, and when no UDP target is available `PlayerHolder` tries `UsbPlayer.startHttp` (the `/au` to MediaCodec path the USB fallback already uses) before ExoPlayer, falling back to MPEG-TS only if it fails. The stats overlay labels it `LAN HTTP /au`.
+
+- Reported in [#95](https://github.com/shadow-x78/orbiscreen/issues/95) by [@Bulrok](https://github.com/Bulrok).
+
 ## [v0.37.1] - 2026-10-15
 
 ### Fixed
