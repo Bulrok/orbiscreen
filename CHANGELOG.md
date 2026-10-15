@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- fix: the Android input WebSocket no longer gets 401 through the pinned proxy, so Wi-Fi touch and pen input stops falling back to per-event HTTP
+
+`InputDispatcher` opens `/input/ws` against the local `PinnedHostProxy` with `Authorization: Bearer <proxy localToken>`. The proxy's upgrade relay forwarded that header unchanged and appended the real credential as `?token=`; the host's `request_credential` reads the bearer header first, so every upgrade was rejected with 401 and all touch, pen and pointer input went through one `POST /input` per event. That path is slow, can reorder events, and drops requests at its 500 ms timeout; a dropped button release left the host with a held button that blocked real mouse clicks. The relay now replaces the `Authorization` header with the host credential (`withHostCredential`, unit-tested), and the WebSocket listener logs open and failure instead of failing silently.
+
+- Reported in [#97](https://github.com/shadow-x78/orbiscreen/issues/97) by [@Bulrok](https://github.com/Bulrok).
+
 ## [v0.37.1] - 2026-10-15
 
 ### Fixed

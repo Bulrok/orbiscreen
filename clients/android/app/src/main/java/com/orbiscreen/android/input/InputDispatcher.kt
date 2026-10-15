@@ -206,10 +206,14 @@ class InputDispatcher(
         val sid = sessionIdProvider?.invoke()?.takeIf { it.isNotBlank() } ?: sessionId
         sid?.takeIf { it.isNotBlank() }?.let { builder.header("X-Orbiscreen-Session", it) }
         webSocket = http.newWebSocket(builder.build(), object : okhttp3.WebSocketListener() {
+            override fun onOpen(webSocket: okhttp3.WebSocket, response: okhttp3.Response) {
+                Log.i(TAG, "input WebSocket open")
+            }
             override fun onClosed(webSocket: okhttp3.WebSocket, code: Int, reason: String) {
                 this@InputDispatcher.webSocket = null
             }
             override fun onFailure(webSocket: okhttp3.WebSocket, t: Throwable, response: okhttp3.Response?) {
+                Log.w(TAG, "input WebSocket failed: ${response?.code ?: "-"} ${t.message}")
                 this@InputDispatcher.webSocket = null
             }
         })
