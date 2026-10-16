@@ -77,7 +77,6 @@ class UsbPlayer(
     private var aoaMode = false
     val usesAoa: Boolean get() = aoaMode
 
-    /** Set when /au is pulled over Wi-Fi rather than through the USB accessory link. */
     var overLan = false
     private var httpCall: okhttp3.Call? = null
 

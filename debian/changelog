@@ -1,3 +1,18 @@
+orbiscreen (0.37.3~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.3 for Ubuntu noble.
+  * Fix: on hosts without per-client display sessions (GNOME/portal) the
+    client never gets a UDP key, so Wi-Fi video fell back to ExoPlayer's
+    buffered MPEG-TS. /au is now allowed through the pinned proxy and, when
+    no UDP target is available, PlayerHolder tries UsbPlayer.startHttp (the
+    /au to MediaCodec path the USB fallback uses) before ExoPlayer, falling
+    back to MPEG-TS only if it fails.
+  * Reported and fixed by @Bulrok in #95 (PR #104); the issue is left open
+    pending confirmation.
+  * Bump version to 0.37.3 across all packages; Android versionCode 173.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Fri, 16 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.2~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.2 for Ubuntu noble.

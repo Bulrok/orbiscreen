@@ -299,9 +299,6 @@ class PlayerHolder(
             return null
         }
 
-        // No UDP target (hosts without per-client sessions, e.g. GNOME, never issue a UDP key):
-        // pull the raw Annex-B /au stream straight into MediaCodec, as the USB HTTP fallback does,
-        // instead of ExoPlayer's MPEG-TS pipeline, which buffers before it renders.
         run {
             val au = UsbPlayer(stats) { postIdr() }
             au.onResolutionFallback = { w, h -> onResolutionFallback?.invoke(w, h) }

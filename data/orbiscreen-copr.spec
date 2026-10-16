@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.37.2
+%global version 0.37.3
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Fri Oct 16 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.3-1
+- Release 0.37.3: play Wi-Fi video through the low-latency Annex-B /au path on hosts without per-client sessions; reported and fixed by @Bulrok in #95 (PR #104)
+
 * Thu Oct 15 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.2-1
 - Release 0.37.2: tear down Android network clients off the main thread to avoid NetworkOnMainThreadException on Wi-Fi teardown; reported and fixed by @Bulrok in #94 (PR #103)
 
