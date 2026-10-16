@@ -1,3 +1,17 @@
+orbiscreen (0.37.4~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.4 for Ubuntu noble.
+  * Fix: PinnedHostProxy left Nagle on for its loopback sockets, so the
+    relay's small writes waited for delayed ACKs and a 60 fps stream reached
+    the player in ~40 ms clumps. The loopback serve socket and the upstream
+    /input/ws socket now set tcpNoDelay, and the HTTPS listener sets
+    TCP_NODELAY through axum_server's NoDelayAcceptor.
+  * Reported and fixed by @Bulrok in #96 (PR #102); the issue is left open
+    pending confirmation.
+  * Bump version to 0.37.4 across all packages; Android versionCode 174.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Fri, 16 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.3~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.3 for Ubuntu noble.

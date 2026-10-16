@@ -631,8 +631,6 @@ async fn serve_https(
         let _ = shutdown.changed().await;
         stop.shutdown();
     });
-    // TCP_NODELAY, as the AOA proxy already sets: with Nagle on, the tail segment of a large
-    // video frame can wait for the client's delayed ACK.
     let acceptor = axum_server::tls_rustls::RustlsAcceptor::new(config)
         .acceptor(axum_server::accept::NoDelayAcceptor::new());
     axum_server::bind(addr)

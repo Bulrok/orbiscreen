@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.4] - 2026-10-16
+
+### Fixed
+- fix: disable Nagle on the pinned-proxy sockets and the HTTPS listener so Wi-Fi video is not delivered in ~40 ms clumps
+
+PinnedHostProxy left Nagle's algorithm on for its loopback sockets, so the relay's small chunk-framing and tail writes waited for the reader's delayed ACK (~40 ms on Android) and a steady 60 fps stream reached the player in clumps of 3-4 frames about every 55 ms. The loopback serve socket and the upstream `/input/ws` socket now set `tcpNoDelay`, and the host's HTTPS listener sets `TCP_NODELAY` through `axum_server`'s `NoDelayAcceptor` (as the AOA proxy already did). Measured on 2560x1536@60 over 5 GHz Wi-Fi (60 s): frame-interval p50/p95/p99 7/56/62 ms -> 17/24/28 ms, stalls over 42 ms 589 -> 0, host send to on-screen mean/p95 19/44 ms -> 7/15 ms.
+
+- Reported and fixed by [@Bulrok](https://github.com/Bulrok) in [#96](https://github.com/shadow-x78/orbiscreen/issues/96) via [#102](https://github.com/shadow-x78/orbiscreen/pull/102), landed as commit `d99c1d5`. The issue is intentionally left open pending confirmation on the released build.
+- Version bumped to 0.37.4 across the Cargo workspace, Android (`versionCode` 174), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.37.3] - 2026-10-16
 
 ### Fixed

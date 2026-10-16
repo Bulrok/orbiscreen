@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.37.3
+%global version 0.37.4
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Fri Oct 16 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.4-1
+- Release 0.37.4: disable Nagle on the pinned-proxy sockets and the HTTPS listener so Wi-Fi video is not delivered in ~40 ms clumps; reported and fixed by @Bulrok in #96 (PR #102)
+
 * Fri Oct 16 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.3-1
 - Release 0.37.3: play Wi-Fi video through the low-latency Annex-B /au path on hosts without per-client sessions; reported and fixed by @Bulrok in #95 (PR #104)
 

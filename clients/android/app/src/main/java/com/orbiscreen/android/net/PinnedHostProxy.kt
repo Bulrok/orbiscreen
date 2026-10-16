@@ -82,9 +82,6 @@ class PinnedHostProxy internal constructor(
 
     private fun serve(socket: Socket) {
         socket.soTimeout = 5000
-        // The relay writes whatever each upstream read returns, often a few bytes of chunk framing
-        // followed by a full buffer. With Nagle on this loopback socket the small tail write waited
-        // for the reader's delayed ACK, so video reached the player in ~40 ms clumps.
         socket.tcpNoDelay = true
         val input = BufferedInputStream(socket.getInputStream())
         val rawHead = java.io.ByteArrayOutputStream()
@@ -177,7 +174,6 @@ class PinnedHostProxy internal constructor(
             return
         }
         val plain = Socket()
-        // Input events are tiny writes; with Nagle on they can queue behind the host's delayed ACK.
         plain.tcpNoDelay = true
         plain.connect(java.net.InetSocketAddress(url.host, url.port), 5_000)
         val ssl = this.client.sslSocketFactory.createSocket(plain, url.host, url.port, true) as javax.net.ssl.SSLSocket
