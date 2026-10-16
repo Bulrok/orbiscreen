@@ -1,3 +1,20 @@
+orbiscreen (0.37.5~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.5 for Ubuntu noble.
+  * Fix: the proxy forwarded the client's proxy-local Authorization header
+    unchanged on the /input/ws upgrade and appended the real credential as
+    ?token=, but the host reads the bearer header before the query, so every
+    upgrade was rejected with 401 and all Wi-Fi touch/pen input fell back to
+    one HTTP request per event, which could drop a button release and leave a
+    held button on the host. The upgrade head is now rewritten to replace the
+    Authorization header with the host credential (unit-tested), and the
+    WebSocket listener logs its failures.
+  * Reported and fixed by @Bulrok in #97 (PR #101); the issue is left open
+    pending confirmation.
+  * Bump version to 0.37.5 across all packages; Android versionCode 175.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Fri, 16 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.4~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.4 for Ubuntu noble.

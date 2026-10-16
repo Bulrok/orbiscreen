@@ -20,12 +20,6 @@ import kotlin.concurrent.thread
 
 internal fun pinnedProxyAllows(path: String): Boolean = path in PINNED_PROXY_PATHS
 
-/**
- * Rewrites a downstream upgrade request head for the host. The client authenticates to the proxy
- * with `Authorization: Bearer <localToken>`; forwarding that header made the host, which reads the
- * bearer header before any `?token=`, reject every `/input/ws` upgrade with 401, so all touch and
- * pen input fell back to one HTTP request per event. The header is replaced with the host credential.
- */
 internal fun withHostCredential(rawHead: ByteArray, credential: String): String {
     val lines = String(rawHead, Charsets.ISO_8859_1).split("\r\n")
     require(lines.isNotEmpty() && lines[0].split(' ').size == 3) { "malformed request line" }

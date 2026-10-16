@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.5] - 2026-10-16
+
+### Fixed
+- fix: stop forwarding the proxy-local token on the input WebSocket upgrade so Wi-Fi touch and pen input reaches the host over WebSocket
+
+Over Wi-Fi the input WebSocket (`/input/ws`) never connected: the proxy forwarded the client's `Authorization: Bearer <localToken>` unchanged and appended the real credential as `?token=`, but the host reads the bearer header before the query, so every upgrade was rejected with 401. All touch, pen and pointer input fell back to one HTTP `POST /input` per event — laggy, prone to reordering, and a request that hit the 500 ms timeout was silently dropped, which could leave a held button on the host when the lost event was a release. The upgrade head is now rewritten to replace the Authorization header with the host credential (unit-tested), and the WebSocket listener logs its failures instead of swallowing them.
+
+- Reported and fixed by [@Bulrok](https://github.com/Bulrok) in [#97](https://github.com/shadow-x78/orbiscreen/issues/97) via [#101](https://github.com/shadow-x78/orbiscreen/pull/101), landed as commit `a6f3e5f`. The issue is intentionally left open pending confirmation on the released build.
+- Version bumped to 0.37.5 across the Cargo workspace, Android (`versionCode` 175), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.37.4] - 2026-10-16
 
 ### Fixed
