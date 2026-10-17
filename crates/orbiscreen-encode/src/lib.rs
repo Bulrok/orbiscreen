@@ -249,24 +249,65 @@ fn max_u32_property(el: &gstreamer::Element, name: &str) -> Option<u32> {
         })
 }
 
+fn infinite_gop_requested() -> bool {
+    std::env::var("ORBISCREEN_INFINITE_GOP")
+        .map(|v| matches!(v.trim(), "1" | "true" | "yes"))
+        .unwrap_or(false)
+}
+
 fn configure_infinite_gop(encoder: &gstreamer::Element) {
     set_str_if_present(encoder, "intra-refresh", "true");
+    let on_demand = infinite_gop_requested();
     if let Some(max) = max_u32_property(encoder, "key-int-max") {
-        let value = if max == 0 { 120 } else { max.min(120) };
+        let value = if on_demand {
+            if max == 0 {
+                u32::MAX
+            } else {
+                max
+            }
+        } else if max == 0 {
+            120
+        } else {
+            max.min(120)
+        };
         encoder.set_property_from_str("key-int-max", &value.to_string());
     }
     if encoder.find_property("gop-size").is_some() {
         if let Some(spec) = encoder.find_property("gop-size") {
             if spec.downcast_ref::<glib::ParamSpecInt>().is_some() {
-                encoder.set_property_from_str("gop-size", "120");
+                if on_demand {
+                    encoder.set_property_from_str("gop-size", "-1");
+                } else {
+                    encoder.set_property_from_str("gop-size", "120");
+                }
             } else if let Some(max) = max_u32_property(encoder, "gop-size") {
-                let value = if max == 0 { 120 } else { max.min(120) };
+                let value = if on_demand {
+                    if max == 0 {
+                        u32::MAX
+                    } else {
+                        max
+                    }
+                } else if max == 0 {
+                    120
+                } else {
+                    max.min(120)
+                };
                 encoder.set_property_from_str("gop-size", &value.to_string());
             }
         }
     }
     if let Some(max) = max_u32_property(encoder, "keyframe-period") {
-        let value = if max == 0 { 120 } else { max.min(120) };
+        let value = if on_demand {
+            if max == 0 {
+                u32::MAX
+            } else {
+                max
+            }
+        } else if max == 0 {
+            120
+        } else {
+            max.min(120)
+        };
         encoder.set_property_from_str("keyframe-period", &value.to_string());
     }
     if encoder

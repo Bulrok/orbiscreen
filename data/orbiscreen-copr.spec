@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.37.6
+%global version 0.37.7
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Sat Oct 17 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.7-1
+- Release 0.37.7: opt-in infinite GOP for on-demand IDR on reliable transports (ORBISCREEN_INFINITE_GOP); suggested by @Bulrok in #99
+
 * Sat Oct 17 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.6-1
 - Release 0.37.6: keep the newest frame for the idle keepalive so the cursor no longer snaps back when movement stops; reported and fixed by @Bulrok in #98 (PR #100)
 

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.7] - 2026-10-17
+
+### Added
+- feat: opt-in infinite GOP for on-demand IDR on reliable transports (`ORBISCREEN_INFINITE_GOP`)
+
+`configure_infinite_gop` sets `gop-size=120` / `key-int-max=120` by default so the encoder emits a full IDR roughly every 2 s at 60 fps — about 157 KiB at 2560×1536, a single-frame hitch that accounts for ~22 % of the remaining >25 ms intervals (vs ~4 % expected by chance). Over the reliable transports (`/au` over TCP, AOA) the periodic IDR buys nothing because clients already request one on attach and when their decoder waits for it, and periodic IDR can't recover UDP loss anyway (intra-refresh handles that). Set `ORBISCREEN_INFINITE_GOP=1` to make `gop-size` `-1`, `key-int-max` / `keyframe-period` their property maximum, so keyframes appear only on demand. The default is unchanged; UDP still gets the periodic or intra-refresh recovery it needs.
+
+- Suggested and tested by [@Bulrok](https://github.com/Bulrok) in [#99](https://github.com/shadow-x78/orbiscreen/issues/99), who measured the single-frame hitch distribution and verified `gop-size=-1` on NVENC. The issue is intentionally left open pending a full before/after benchmark.
+- Version bumped to 0.37.7 across the Cargo workspace, Android (`versionCode` 177), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.37.6] - 2026-10-17
 
 ### Fixed

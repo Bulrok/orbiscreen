@@ -1,3 +1,18 @@
+orbiscreen (0.37.7~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.7 for Ubuntu noble.
+  * Suggestion: opt-in infinite GOP so keyframes appear only on demand.
+    Setting ORBISCREEN_INFINITE_GOP=1 makes gop-size -1 and key-int-max /
+    keyframe-period reach their property maximum; the periodic IDR bought
+    nothing on the reliable transports (/au over TCP, AOA) and each one is a
+    big frame spike. The default is unchanged; UDP still gets periodic or
+    intra-refresh recovery.
+  * Suggested and tested by @Bulrok in #99; the issue is left open pending a
+    full before/after benchmark.
+  * Bump version to 0.37.7 across all packages; Android versionCode 177.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Sat, 17 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.6~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.6 for Ubuntu noble.
