@@ -40,7 +40,8 @@ class UsbPlayer(
     private val _latencyMs = MutableStateFlow(-1)
     val latencyMs: StateFlow<Int> get() = _latencyMs
 
-    private var codec: MediaCodec? = null
+    @Volatile private var codec: MediaCodec? = null
+    @Volatile private var drainThread: Thread? = null
     @Volatile private var surface: Surface? = null
     private val running = AtomicBoolean(false)
     private var configured = false
@@ -92,7 +93,7 @@ class UsbPlayer(
     override fun detachSurface() {
         surface = null
         releaseCodec()
-        sentQueue.clear()
+        synchronized(sentQueue) { sentQueue.clear() }
     }
 
     fun start(sessionId: String?, width: Int, height: Int): Boolean {
@@ -252,7 +253,7 @@ class UsbPlayer(
     @Synchronized
     private fun resetStreamState() {
         releaseCodec()
-        sentQueue.clear()
+        synchronized(sentQueue) { sentQueue.clear() }
     }
 
     fun requestIdr() {
@@ -416,6 +417,7 @@ class UsbPlayer(
                 val c = createConfiguredCodec(sps0, pps0, surf)
                 c.start()
                 codec = c
+                startDrainThread(c)
                 configured = true
                 configureFailures = 0
                 codecState = "decoding/$codecKind"
@@ -437,12 +439,11 @@ class UsbPlayer(
             return
         }
         try {
-            drainOutputs(c, sentNs)
+            // Outputs are released by the drain thread as soon as they decode, so a full input
+            // queue only means the decoder is briefly busy: wait for it instead of dropping to
+            // wait-for-IDR, which throws away every frame until the next keyframe arrives.
             var inIx = c.dequeueInputBuffer(8_000)
-            if (inIx < 0) {
-                drainOutputs(c, sentNs)
-                inIx = c.dequeueInputBuffer(0)
-            }
+            if (inIx < 0) inIx = c.dequeueInputBuffer(INPUT_WAIT_US)
             if (inIx < 0) {
                 Log.w(TAG, "codec input full; hold until IDR")
                 stats.noteDropped()
@@ -454,19 +455,17 @@ class UsbPlayer(
                 c.queueInputBuffer(inIx, 0, 0, 0, 0)
                 stats.noteDropped()
                 enterWaitKey()
-                drainOutputs(c, sentNs)
                 return
             }
             inBuf.clear()
             inBuf.put(au)
             val flags = if (key) MediaCodec.BUFFER_FLAG_KEY_FRAME else 0
             val ptsUs = System.nanoTime() / 1000L
-            if (sentNs > 0L) {
+            if (sentNs > 0L) synchronized(sentQueue) {
                 sentQueue.addLast(sentNs)
                 while (sentQueue.size > 120) sentQueue.removeFirst()
             }
             c.queueInputBuffer(inIx, 0, au.size, ptsUs, flags)
-            drainOutputs(c, sentNs)
         } catch (e: Exception) {
             Log.w(TAG, "codec feed: ${e.message}")
             stats.noteDropped()
@@ -626,23 +625,45 @@ class UsbPlayer(
         return format
     }
 
-    private fun drainOutputs(c: MediaCodec, sentNs: Long) {
-        val info = MediaCodec.BufferInfo()
-        var outIx = c.dequeueOutputBuffer(info, 0)
-        while (outIx >= 0) {
-            val presentedSent = sentQueue.removeFirstOrNull() ?: sentNs
-            stats.notePresented(presentedSent)
-            c.releaseOutputBuffer(outIx, System.nanoTime())
-            outIx = c.dequeueOutputBuffer(info, 0)
+    /**
+     * Release decoded frames the moment they come out of the decoder. Draining only when the next
+     * access unit arrived held every frame back by one frame interval, and a decoder holding its
+     * outputs filled its input queue, which the feed path treated as a drop until the next IDR.
+     */
+    private fun startDrainThread(c: MediaCodec) {
+        drainThread = Thread({
+            val info = MediaCodec.BufferInfo()
+            while (codec === c) {
+                val outIx = try {
+                    c.dequeueOutputBuffer(info, 10_000)
+                } catch (_: IllegalStateException) {
+                    break
+                }
+                if (outIx < 0) continue
+                val presentedSent = synchronized(sentQueue) { sentQueue.removeFirstOrNull() }
+                if (presentedSent != null) stats.notePresented(presentedSent)
+                try {
+                    c.releaseOutputBuffer(outIx, true)
+                } catch (_: IllegalStateException) {
+                    break
+                }
+            }
+        }, "OrbiDecodeDrain").apply {
+            isDaemon = true
+            priority = Thread.MAX_PRIORITY
+            start()
         }
     }
 
     @Synchronized
     private fun releaseCodec() {
-        try { codec?.stop() } catch (_: Exception) {}
-        try { codec?.release() } catch (_: Exception) {}
+        val c = codec
         codec = null
         configured = false
+        drainThread?.let { if (it !== Thread.currentThread()) it.join(100) }
+        drainThread = null
+        try { c?.stop() } catch (_: Exception) {}
+        try { c?.release() } catch (_: Exception) {}
     }
 
     private fun startCodeLen(au: ByteArray, i: Int): Int? {
@@ -667,6 +688,7 @@ class UsbPlayer(
 
     private companion object {
         const val STALE_PAYLOAD_WATERMARK = 6
+        const val INPUT_WAIT_US = 40_000L
         const val STARVED_IDR_RETRY_MS = 500L
         const val STALL_CHECK_MS = 1_000L
         const val STALL_TIMEOUT_MS = 3_000L
