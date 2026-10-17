@@ -439,9 +439,6 @@ class UsbPlayer(
             return
         }
         try {
-            // Outputs are released by the drain thread as soon as they decode, so a full input
-            // queue only means the decoder is briefly busy: wait for it instead of dropping to
-            // wait-for-IDR, which throws away every frame until the next keyframe arrives.
             var inIx = c.dequeueInputBuffer(8_000)
             if (inIx < 0) inIx = c.dequeueInputBuffer(INPUT_WAIT_US)
             if (inIx < 0) {
@@ -625,11 +622,6 @@ class UsbPlayer(
         return format
     }
 
-    /**
-     * Release decoded frames the moment they come out of the decoder. Draining only when the next
-     * access unit arrived held every frame back by one frame interval, and a decoder holding its
-     * outputs filled its input queue, which the feed path treated as a drop until the next IDR.
-     */
     private fun startDrainThread(c: MediaCodec) {
         drainThread = Thread({
             val info = MediaCodec.BufferInfo()

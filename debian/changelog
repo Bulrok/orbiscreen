@@ -1,3 +1,17 @@
+orbiscreen (0.37.8~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.8 for Ubuntu noble.
+  * Fix (from @Bulrok, PR #105): UsbPlayer now releases decoded frames from a
+    dedicated drain thread instead of only inside the feed path, so no frame
+    is held back by one interval and a full input queue waits up to 40 ms
+    instead of dropping to wait-for-IDR after 8 ms.
+  * Fix (#106): revoked and denied clients no longer count towards the
+    16-client pairing limit; revoke() and deny() remove the entry entirely,
+    and approve() counts only active clients.
+  * Bump version to 0.37.8 across all packages; Android versionCode 178.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Sat, 17 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.7~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.7 for Ubuntu noble.

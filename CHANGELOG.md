@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.8] - 2026-10-17
+
+### Fixed
+- fix: release decoded frames from a dedicated drain thread so no frame is held back by one frame interval
+
+In `UsbPlayer` (AOA, USB HTTP, and LAN `/au` paths) decoded frames were released only inside `feedCodec` when the next access unit arrived, so every frame was held back by one frame interval and a decoder briefly holding its outputs filled the input queue, which the feed path treated as a drop until the next IDR. A dedicated drain thread (`OrbiDecodeDrain`) now calls `releaseOutputBuffer(idx, true)` the moment MediaCodec produces a frame, and the input-queue path waits up to 40 ms for a slot before counting a drop (was 8 ms). A/B on three devices at 2560×1536@60 over Wi-Fi: mean latency dropped ~11-12 ms on all, the Galaxy Note 10+ dropped from 600 dropped frames to 0, and the Galaxy A30's >42 ms stalls dropped from 53 to 5.
+
+- Reported and fixed by [@Bulrok](https://github.com/Bulrok) via [#105](https://github.com/shadow-x78/orbiscreen/pull/105), landed as commit `7fb4c5d`
+- fix: revoked and denied clients no longer count towards the 16-client pairing limit
+
+`PairingRegistry::revoke()` and the post-approval branch of `deny()` now remove the client entry entirely (the credential hash is already unusable), and `approve()` counts only active (non-revoked) clients against `MAX_CLIENTS`. Previously revoked entries stayed in the table and blocked new pairings once 16 clients had ever been stored, with the approval failing as `"unknown request"` instead of a clear limit error.
+
+- Reported by [@Bulrok](https://github.com/Bulrok) in [#106](https://github.com/shadow-x78/orbiscreen/issues/106)
+- Version bumped to 0.37.8 across the Cargo workspace, Android (`versionCode` 178), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.37.7] - 2026-10-17
 
 ### Added

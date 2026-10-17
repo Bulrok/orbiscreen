@@ -795,13 +795,8 @@ mod tests {
         let clients = server.handles.pairing.clients();
         assert_eq!(
             clients.len(),
-            1,
-            "the stored entry stays for the audit trail"
-        );
-        assert_eq!(
-            clients[0].status,
-            orbiscreen_transport::pairing::ClientStatus::Revoked,
-            "the paired device must be revoked"
+            0,
+            "the revoked entry is removed from the registry"
         );
         assert!(
             server.handles.pairing.claim(&id, "192.0.2.30").is_none(),

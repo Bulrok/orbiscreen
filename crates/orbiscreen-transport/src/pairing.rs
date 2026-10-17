@@ -228,7 +228,12 @@ impl PairingRegistry {
         else {
             return Ok(None);
         };
-        if data.requests[index].request.approved || data.clients.len() >= MAX_CLIENTS {
+        let active = data
+            .clients
+            .iter()
+            .filter(|c| c.client.status != ClientStatus::Revoked)
+            .count();
+        if data.requests[index].request.approved || active >= MAX_CLIENTS {
             return Ok(None);
         }
         let credential = generate_credential();
@@ -301,6 +306,8 @@ impl PairingRegistry {
             {
                 client.client.status = ClientStatus::Revoked;
             }
+            data.clients
+                .retain(|c| c.client.status != ClientStatus::Revoked);
             data.sessions.retain(|_, owner| owner != &client_id);
             self.persist(&mut data)?;
         }
@@ -320,6 +327,8 @@ impl PairingRegistry {
             return Ok(false);
         };
         client.client.status = ClientStatus::Revoked;
+        data.clients
+            .retain(|c| c.client.status != ClientStatus::Revoked);
         data.requests
             .retain(|p| p.client_id.as_deref() != Some(client_id));
         data.sessions.retain(|_, owner| owner != client_id);
@@ -493,7 +502,12 @@ fn load_registry(path: &Path) -> io::Result<RegistryData> {
     }
     let data: RegistryData = serde_json::from_slice(&content)
         .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "invalid pairing state"))?;
-    if data.clients.len() > MAX_CLIENTS
+    let active_clients = data
+        .clients
+        .iter()
+        .filter(|c| c.client.status != ClientStatus::Revoked)
+        .count();
+    if active_clients > MAX_CLIENTS
         || data.clients.iter().enumerate().any(|(index, c)| {
             c.client.client_id.is_empty()
                 || c.credential_hash.len() != 64
