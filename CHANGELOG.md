@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- fix: release decoded frames from a dedicated drain thread in the Annex-B player instead of on the next input
+
+`UsbPlayer` (the AOA, USB HTTP and LAN `/au` paths) drained MediaCodec outputs only inside `feedCodec`, so a decoded frame waited for the next access unit to arrive before it was released: one frame interval of added latency. When the decoder was briefly busy, the input queue filled after 8 ms and the feed path dropped to wait-for-IDR, discarding every frame until the next keyframe. Outputs are now released by a dedicated thread as soon as they decode (`releaseOutputBuffer(idx, true)`), and a full input queue waits up to 40 ms for a slot before counting as a drop.
+
+A/B over Wi-Fi (`/au`), testufo 2560x1536@60, NVENC with the stock 2 s GOP, alternating legacy/new 60 s runs (two of each per device), timestamps from the device clock only:
+
+| device | arrive to on-screen mean / p95 | intervals > 25 ms | intervals > 42 ms | frames dropped |
+|---|---|---|---|---|
+| Lenovo Xiaoxin Pad Pro 2022 (SD870), legacy / new | 17.8 / 26.4 ms -> 5.5 / 6.8 ms | 6.7 % -> 9.5 % | 2 -> 1 | 0 -> 0 |
+| Galaxy A30 (Exynos 7904), legacy / new | 38.0 / 58.9 ms -> 26.8 / 36.5 ms | 38.2 % -> 16.6 % | 53 -> 5 | 0 -> 0 |
+| Galaxy Note 10+ (Exynos 9825), legacy / new | 25.5 / 48.5 ms -> 14.1 / 48.4 ms | 14.9 % -> 15.1 % | 118 -> 61 | 600 -> 0 |
+
+On the fast tablet decoder the old one-frame hold also acted as a small jitter buffer, so it shows slightly more single-frame-late intervals with the new path; on the slower decoders pacing improves outright, and the Note no longer hits the input-full to wait-for-IDR cascade (50 times over 2 minutes before). The Note's Wi-Fi delivery was bursty in both arms, so its pacing columns are network-dominated.
+
 ## [v0.37.5] - 2026-10-16
 
 ### Fixed
