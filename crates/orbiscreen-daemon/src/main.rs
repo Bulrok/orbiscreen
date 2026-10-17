@@ -2757,11 +2757,6 @@ async fn run_secondary_display_session(
             match outcome {
                 SourceOutcome::Frame(frame) => {
                     let (width, height) = (frame.width, frame.height);
-                    // Keep the newest frame for the keepalive. Refreshing it only every 100 ms
-                    // meant that when the screen went idle the keepalive re-sent a frame up to
-                    // 100 ms older than the last real one, so the cursor snapped back to an
-                    // earlier position whenever movement stopped. Reuse the buffer to avoid
-                    // reallocating a full frame each time.
                     match &mut keepalive_frame {
                         Some((w, h, buf)) if buf.len() == frame.data.len() => {
                             buf.copy_from_slice(&frame.data[..]);
@@ -3229,11 +3224,6 @@ async fn run_start(
                 SourceOutcome::Frame(frame) => {
                     let _ = fc.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                     let (width, height) = (frame.width, frame.height);
-                    // Keep the newest frame for the keepalive. Refreshing it only every 100 ms
-                    // meant that when the screen went idle the keepalive re-sent a frame up to
-                    // 100 ms older than the last real one, so the cursor snapped back to an
-                    // earlier position whenever movement stopped. Reuse the buffer to avoid
-                    // reallocating a full frame each time.
                     match &mut keepalive_frame {
                         Some((w, h, buf)) if buf.len() == frame.data.len() => {
                             buf.copy_from_slice(&frame.data[..]);

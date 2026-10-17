@@ -1,3 +1,17 @@
+orbiscreen (0.37.6~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.6 for Ubuntu noble.
+  * Fix: the shared-display capture keepalive re-sent a frame up to 100 ms
+    stale when the screen went idle, so the cursor snapped back to an earlier
+    position whenever movement stopped. The snapshot now copies the newest
+    frame on every arrival (reusing the buffer) so the keepalive always
+    re-sends the last real image.
+  * Reported and fixed by @Bulrok in #98 (PR #100); the issue is left open
+    pending confirmation.
+  * Bump version to 0.37.6 across all packages; Android versionCode 176.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Fri, 17 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.5~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.5 for Ubuntu noble.

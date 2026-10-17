@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.37.5
+%global version 0.37.6
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Sat Oct 17 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.6-1
+- Release 0.37.6: keep the newest frame for the idle keepalive so the cursor no longer snaps back when movement stops; reported and fixed by @Bulrok in #98 (PR #100)
+
 * Fri Oct 16 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.5-1
 - Release 0.37.5: stop forwarding the proxy-local token on the input WebSocket upgrade so Wi-Fi touch and pen input reaches the host over WebSocket; reported and fixed by @Bulrok in #97 (PR #101)
 
