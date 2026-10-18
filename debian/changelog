@@ -1,3 +1,17 @@
+orbiscreen (0.37.9~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.37.9 for Ubuntu noble.
+  * Fix: the Android client reported the active display mode's refresh rate
+    instead of the panel capability, so on devices whose active mode is 30 Hz
+    the host paced at 30 fps even though the panel supports 60 Hz or more.
+    The client now reads the maximum rate across supportedModes (like the
+    native resolution), rounds it (59.94 -> 60), and passes the detected rate
+    in every resize path instead of a hardcoded 60. Devices that only support
+    30 still report 30; nothing is forced.
+  * Bump version to 0.37.9 across all packages; Android versionCode 179.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Sun, 18 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.8~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.8 for Ubuntu noble.

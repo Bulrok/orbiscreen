@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.37.9] - 2026-10-18
+
+### Fixed
+- fix: detect the panel's maximum refresh rate dynamically instead of trusting the active display mode
+
+The Android client reported `display.mode.refreshRate` — the **active** mode — as its refresh rate. On devices whose active mode runs at 30 Hz (battery saver, adaptive refresh, or the default mode) the host was told 30 fps even though the panel supports 60 Hz or more, so the virtual display, damage pump, and encoder all paced at 30. The client now reads the maximum rate across `display.supportedModes` (the panel capability, exactly like the native resolution is detected), rounds it properly (`59.94 -> 60`), and passes the same detected rate in every resize path instead of the hardcoded `60`. Devices that only support 30 still report 30; nothing is forced.
+
+- Version bumped to 0.37.9 across the Cargo workspace, Android (`versionCode` 179), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.37.8] - 2026-10-17
 
 ### Fixed

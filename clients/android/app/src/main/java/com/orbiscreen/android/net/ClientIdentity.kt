@@ -50,7 +50,11 @@ data class ClientIdentity(
                     @Suppress("DEPRECATION")
                     wm.defaultDisplay
                 }
-                display?.mode?.refreshRate?.toInt()?.coerceIn(30, 240) ?: 60
+                val hz = display?.supportedModes
+                    ?.maxOfOrNull { it.refreshRate }
+                    ?: display?.mode?.refreshRate
+                    ?: 60f
+                Math.round(hz).coerceIn(30, 240)
             } catch (_: Exception) {
                 60
             }

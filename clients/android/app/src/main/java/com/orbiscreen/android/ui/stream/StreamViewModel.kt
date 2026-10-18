@@ -157,7 +157,13 @@ class StreamViewModel(
         val physH = mode?.physicalHeight ?: context.resources.displayMetrics.heightPixels
         val nativeW = maxOf(physW, physH)
         val nativeH = minOf(physW, physH)
-        val refreshRate = mode?.refreshRate?.toInt()?.coerceIn(30, 240) ?: 60
+        val refreshRate = run {
+            val hz = display?.supportedModes
+                ?.maxOfOrNull { it.refreshRate }
+                ?: mode?.refreshRate
+                ?: 60f
+            Math.round(hz).coerceIn(30, 240)
+        }
         return Triple(nativeW, nativeH, refreshRate)
     }
 
@@ -683,7 +689,7 @@ class StreamViewModel(
         updateDimensions(targetW, targetH, if (preset == "native") "Native" else "${targetW}x${targetH}")
     }
 
-    fun updateDimensions(w: Int, h: Int, label: String = "${w}x${h}", fps: Int = 60) {
+    fun updateDimensions(w: Int, h: Int, label: String = "${w}x${h}", fps: Int = detectNativeDisplay().third) {
         if (w > 0 && h > 0) {
             val (clampedW, clampedH) = clampToPanel(w, h)
             val requested = maxOf(w, h) to minOf(w, h)

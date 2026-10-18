@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.37.8
+%global version 0.37.9
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Sun Oct 18 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.9-1
+- Release 0.37.9: detect the panel maximum refresh rate from supportedModes instead of the active display mode
+
 * Sat Oct 17 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.8-1
 - Release 0.37.8: release decoded frames from a dedicated drain thread (PR #105 from @Bulrok) and stop revoked clients from blocking the pairing limit (#106)
 
