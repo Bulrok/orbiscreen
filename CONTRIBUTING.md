@@ -1,4 +1,24 @@
+<div align="center">
+
 # Contributing to Orbiscreen
+
+[![Version](https://img.shields.io/badge/version-0.38.0-2563eb?style=flat-square&logo=semver)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](LICENSE)
+![Rust](https://img.shields.io/badge/rust-1.92%2B-16a34a?style=flat-square&logo=rust)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Android-9333ea?style=flat-square&logo=linux)
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Contributing to Orbiscreen](#contributing-to-orbiscreen)
+- [Day-to-Day Work](#day-to-day-work)
+- [Release Process (maintainers)](#release-process-maintainers)
+- [Verification Checklist](#verification-checklist)
+
+---
 
 Contributions to Orbiscreen are welcome. Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
 
@@ -27,14 +47,9 @@ A release is ONE commit containing the pending work plus the version bump:
    - the release-matrix line in `docs/PACKAGING.md`/`docs/PACKAGING_AR.md` and the scope heading in `SECURITY.md`
 2. Rotate the pending `CHANGELOG.md` entry into a `## [vX.Y.Z] - <date>` block dated today (the release notes are extracted from this heading by the workflow).
 3. Pick the bump by CHANGELOG convention: `Added` work = minor (`0.14.0`); `Fixed`/`Changed`/`Cleanup` only = patch (`0.13.3`).
-4. Verify locally, commit everything as one release commit, and tag it:
+4. Verify locally, commit everything as one release commit, and tag it (see [Verification Checklist](#verification-checklist)):
 
 ```bash
-cargo fmt --all --check
-cargo clippy --workspace --all-targets --locked -- -D warnings
-cargo test --workspace --locked
-cargo deny check
-
 git add -A
 git commit -m "orbiscreen | vX.Y.Z | <type>: one-line summary of the release"
 git tag -a vX.Y.Z -m "vX.Y.Z - <one-line summary>"
@@ -47,6 +62,15 @@ git push origin main vX.Y.Z
 ```
 
 The tag push triggers the [release workflow](.github/workflows/release.yml), which gates on fmt/clippy/tests/cargo-deny, then builds, signs, and attaches the tarball, `.deb`, `.rpm`, AppImage, and Android APK (each with a SHA256 checksum) to the GitHub release.
+
+## Verification Checklist
+
+```bash
+cargo fmt --all --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo test --workspace --locked
+cargo deny check
+```
 
 ---
 
