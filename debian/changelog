@@ -1,3 +1,16 @@
+orbiscreen (0.38.0~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.38.0 for Ubuntu noble.
+  * Fix: after many hours of streaming the AOA video lane could stall
+    (tablet backgrounded, USB stall), and each stale-frame eviction
+    requested a fresh IDR after only 250 ms — a vicious cycle that
+    saturated the encoder and the USB link. The IDR debounce on eviction
+    is now 1 s, and after 64 consecutive evictions without a successful
+    admit the IDR requests stop entirely until the lane drains again.
+  * Bump version to 0.38.0 across all packages; Android versionCode 180.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Tue, 20 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.37.9~ubuntunoble1) noble; urgency=medium
 
   * Release 0.37.9 for Ubuntu noble.

@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.38.0] - 2026-10-20
+
+### Fixed
+- fix: stop the IDR flood when the AOA video lane stalls for hours
+
+After many hours of streaming, the tablet can stop draining the AOA video lane (background, USB stall). The lane then evicts a stale frame on every new encode, and each eviction requested a fresh IDR after only 250 ms — a vicious cycle: each IDR is a big frame (~157 KiB) that makes the lane even fuller, which triggers another IDR, saturating the encoder and the USB link. The `dropped_stale_aus` counter reached 90,000+ and the log filled with `requested IDR from encoder` every ~270 ms. Two changes: the IDR debounce on eviction is raised from 250 ms to 1000 ms, and after 64 consecutive evictions without a successful admit the IDR requests stop entirely until the lane drains again. The `consecutive_evictions` counter is included in the stall warning for diagnosis.
+
+- Version bumped to 0.38.0 across the Cargo workspace, Android (`versionCode` 180), Tauri, PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.37.9] - 2026-10-18
 
 ### Fixed

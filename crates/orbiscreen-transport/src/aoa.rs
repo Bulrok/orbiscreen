@@ -108,7 +108,8 @@ fn send_control(tx: &std::sync::mpsc::SyncSender<Vec<u8>>, frame: Vec<u8>) -> Re
     }
 }
 
-const IDR_DEBOUNCE: Duration = Duration::from_millis(250);
+const IDR_DEBOUNCE: Duration = Duration::from_millis(1000);
+const STALL_IDR_LIMIT: u32 = 64;
 
 #[derive(Clone, Debug)]
 pub struct UsbDeviceInfo {
@@ -510,6 +511,7 @@ async fn run_native_video(
     let mut dropped_keyframes: u32 = 0;
     let mut dropped_stale_aus: u32 = 0;
     let mut dropped_fresh_aus: u32 = 0;
+    let mut consecutive_evictions: u32 = 0;
     let mut last_idr = Instant::now()
         .checked_sub(IDR_DEBOUNCE)
         .unwrap_or_else(Instant::now);
@@ -638,19 +640,26 @@ async fn run_native_video(
                 };
                 if evicted_stale {
                     dropped_stale_aus = dropped_stale_aus.saturating_add(1);
+                    consecutive_evictions = consecutive_evictions.saturating_add(1);
                     if dropped_stale_aus % 16 == 1 {
                         warn!(
                             session = %sid,
                             dropped_stale_aus,
+                            consecutive_evictions,
                             "AOA video lane full; discarded the oldest queued frame"
                         );
                     }
                     wait_key = true;
-                    let now = Instant::now();
-                    if idr_due(last_idr, now) {
-                        last_idr = now;
-                        displays.idr(&sid).await;
+                    if consecutive_evictions <= STALL_IDR_LIMIT {
+                        let now = Instant::now();
+                        if idr_due(last_idr, now) {
+                            last_idr = now;
+                            displays.idr(&sid).await;
+                        }
                     }
+                }
+                if admitted {
+                    consecutive_evictions = 0;
                 }
                 if !admitted {
                     dropped_fresh_aus = dropped_fresh_aus.saturating_add(1);

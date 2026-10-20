@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.37.9
+%global version 0.38.0
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -148,6 +148,10 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Tue Oct 20 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.38.0-1
+- Release 0.38.0: stop the IDR flood when the AOA video lane stalls for hours (raise debounce to 1s, halt after 64 consecutive evictions)
+
+* Sun Oct 18 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.9-1
 * Sun Oct 18 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.37.9-1
 - Release 0.37.9: detect the panel maximum refresh rate from supportedModes instead of the active display mode
 
