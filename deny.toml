@@ -19,6 +19,7 @@ allow = [
     "MPL-2.0",
     "Zlib",
     "ISC",
+    "Unlicense",
 ]
 
 # ── Graph ──

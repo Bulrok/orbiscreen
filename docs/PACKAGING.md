@@ -2,7 +2,7 @@
 
 # Multi-Distro Packaging Guide - Orbiscreen
 
-[![Version](https://img.shields.io/badge/version-0.38.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.39.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
 ![Rust](https://img.shields.io/badge/rust-1.92%2B-16a34a?style=flat-square&logo=rust)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Android-9333ea?style=flat-square&logo=linux)
@@ -31,12 +31,11 @@
 
 When cutting a release, the version must be updated across all packages:
 
-- `Cargo.toml`: `[workspace.package].version = "0.38.0"`
-- `clients/android/app/build.gradle.kts`: `versionName = "0.38.0"`, `versionCode = 180`
-- `crates/orbiscreen-gui/tauri.conf.json`: `"version": "0.38.0"`
-- `PKGBUILD`: `pkgver=0.38.0`
-- `debian/changelog`: new entry for `0.38.0-1`
-- `data/orbiscreen-copr.spec`: `Version: 0.38.0`
+- `Cargo.toml`: `[workspace.package].version = "0.39.0"`
+- `clients/android/app/build.gradle.kts`: `versionName = "0.39.0"`, `versionCode = 181`
+- `PKGBUILD`: `pkgver=0.39.0`
+- `debian/changelog`: new entry for `0.39.0-1`
+- `data/orbiscreen-copr.spec`: `Version: 0.39.0`
 
 Verify with the consistency check, which compares every location above against the Cargo
 workspace and exits non-zero on any mismatch. It runs in CI as well:
@@ -53,7 +52,7 @@ does not detect drift between the packaging files.
 <a id="packaging-matrix"></a>
 ## Packaging Matrix
 
-The release matrix is: `0.38.0` (workspace), `versionCode = 180` (Android). The Android release keystore is no longer shipped in the repo (see SECURITY.md); supply `ORBISCREEN_KEYSTORE_PATH`/`ORBISCREEN_STORE_PASSWORD`/`ORBISCREEN_KEY_ALIAS`/`ORBISCREEN_KEY_PASSWORD` when building a release APK.
+The release matrix is: `0.39.0` (workspace), `versionCode = 181` (Android). The Android release keystore is no longer shipped in the repo (see SECURITY.md); supply `ORBISCREEN_KEYSTORE_PATH`/`ORBISCREEN_STORE_PASSWORD`/`ORBISCREEN_KEY_ALIAS`/`ORBISCREEN_KEY_PASSWORD` when building a release APK.
 
 Orbiscreen provides build configurations and package definitions for all major Linux distributions and Android:
 
@@ -156,8 +155,8 @@ The generated RPM: `orbiscreen-<version>-1.x86_64.rpm`
 
 ### Spec File
 `data/orbiscreen-copr.spec` contains the COPR build definition with:
-- BuildRequires: `cargo`, `rust >= 1.92`, `gstreamer1-devel`, `gstreamer1-plugins-base-devel`, `wayland-devel`, `libdrm-devel`, `kwayland-devel`, `kde-cli-tools`, `libinput-devel`, `libudev-devel`, `systemd-devel`, `openssl-devel`
-- Runtime Requires: `gstreamer1`, `gstreamer1-plugins-base`, `gstreamer1-plugins-good`, `gstreamer1-plugins-bad-free`, `gstreamer1-libav`, `kwayland`, `kwin`, `libinput`, `systemd`, `openssl-libs`, `webkit2gtk4.1` (GUI)
+- BuildRequires: `cargo`, `rust >= 1.92`, `gstreamer1-devel`, `gstreamer1-plugins-base-devel`, `wayland-devel`, `libdrm-devel`, `kwayland-devel`, `kde-cli-tools`, `libinput-devel`, `libudev-devel`, `systemd-devel`, `openssl-devel`, `gtk4-devel`, `libadwaita-devel` (GUI)
+- Runtime Requires: `gstreamer1`, `gstreamer1-plugins-base`, `gstreamer1-plugins-good`, `gstreamer1-plugins-bad-free`, `gstreamer1-libav`, `kwayland`, `kwin`, `libinput`, `systemd`, `openssl-libs`, `gtk4`, `libadwaita` (GUI)
 
 ---
 
@@ -171,7 +170,7 @@ The generated RPM: `orbiscreen-<version>-1.x86_64.rpm`
 ### Control File
 `debian/control` defines:
 - Build-Depends: `cargo (>= 1.92)`, `rustc (>= 1.92)`, `libgstreamer1.0-dev`, `libgstreamer-plugins-base1.0-dev`, `libwayland-dev`, `libdrm-dev`, `libkf5waylandclient-dev`, `libkf5kdelibs4support-dev`, `libinput-dev`, `libudev-dev`, `libsystemd-dev`, `libssl-dev`, `pkg-config`, `debhelper-compat (= 13)`, `cmake`
-- Depends: `${shlibs:Depends}`, `${misc:Depends}`, `gstreamer1.0-plugins-base`, `gstreamer1.0-plugins-good`, `gstreamer1.0-plugins-bad`, `gstreamer1.0-libav`, `libwayland-client0`, `libkf5waylandclient5`, `libinput10`, `libudev1`, `libsystemd0`, `libssl3`, `webkit2gtk-4.1-0` (GUI)
+- Depends: `${shlibs:Depends}`, `${misc:Depends}`, `gstreamer1.0-plugins-base`, `gstreamer1.0-plugins-good`, `gstreamer1.0-plugins-bad`, `gstreamer1.0-libav`, `libwayland-client0`, `libkf5waylandclient5`, `libinput10`, `libudev1`, `libsystemd0`, `libssl3`, `libgtk-4-1`, `libadwaita-1-0` (GUI)
 
 ### Installation
 ```bash
@@ -216,7 +215,7 @@ ORBISCREEN_KEY_PASSWORD=**** \
 
 ### Output
 - `app/build/outputs/apk/release/app-release.apk` (signed, V2/V3)
-- Version code: `171` (0.38.0), edited by hand. Android requires a strictly increasing
+- Version code: `171` (0.39.0), edited by hand. Android requires a strictly increasing
   integer, so it cannot track a semantic version; bump it by one per release.
   `scripts/check-versions.sh` verifies that it still matches the value quoted in this
   document, but it cannot tell you whether the release needs to advance it.

@@ -28,7 +28,7 @@ rm -f "$HOME/.local/bin/orbiscreen"
 rm -f "$HOME/.local/bin/orbiscreen-gui"
 rm -f "$HOME/.config/systemd/user/orbiscreen.service"
 
-rm -f "$HOME/.local/share/applications/orbiscreen.desktop"
+rm -f "$HOME/.local/share/applications/orbiscreen.desktop" "$HOME/.local/share/applications/orbiscreen.gui.desktop"
 rm -f "$HOME/.local/share/icons/hicolor/"*/apps/orbiscreen*.*
 
 case "$HOME/.local/share/orbiscreen" in
@@ -47,7 +47,7 @@ if [ "$EUID" -eq 0 ]; then
     echo "[Orbiscreen] Removing system-wide files..."
     rm -f /usr/bin/orbiscreen
     rm -f /usr/bin/orbiscreen-gui
-    rm -f /usr/share/applications/orbiscreen.desktop
+    rm -f /usr/share/applications/orbiscreen.desktop /usr/share/applications/orbiscreen.gui.desktop
     rm -f /usr/share/icons/hicolor/*/apps/orbiscreen*.*
     rm -rf /usr/share/orbiscreen
 

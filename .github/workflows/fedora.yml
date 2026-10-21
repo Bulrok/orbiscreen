@@ -73,10 +73,8 @@ jobs:
             libX11-devel \
             libxcb-devel \
             libXrandr-devel \
-            gtk3-devel \
-            webkit2gtk4.1-devel \
-            libsoup3-devel \
-            libayatana-appindicator-gtk3-devel
+            gtk4-devel \
+            libadwaita-devel
 
       # ── Checkout ──
       - name: Checkout repository

@@ -1,11 +1,15 @@
-mod commands;
-mod daemon_client;
+// Orbiscreen - Linux Desktop GUI (GPL-3.0-or-later) https://github.com/shadow-x78/orbiscreen
 
-use tauri::{
-    menu::{Menu, MenuItem},
-    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager, WindowEvent,
-};
+mod app;
+mod daemon_client;
+mod i18n;
+mod pages;
+mod qr;
+mod theme;
+mod tray;
+
+use adw::prelude::*;
+use gtk::glib::ExitCode;
 
 fn cleanup_legacy_desktop_file() {
     if let Some(home) = std::env::var_os("HOME") {
@@ -21,14 +25,7 @@ fn cleanup_legacy_desktop_file() {
     }
 }
 
-#[tokio::main]
-async fn main() {
-    if std::env::var_os("__NV_DISABLE_EXPLICIT_SYNC").is_none() {
-        std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
-    }
-    if std::env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_none() {
-        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
-    }
+fn main() -> ExitCode {
     cleanup_legacy_desktop_file();
 
     tracing_subscriber::fmt()
@@ -38,89 +35,26 @@ async fn main() {
         )
         .init();
 
-    tauri::Builder::default()
-        .setup(|app| {
-            let toggle = MenuItem::with_id(app, "toggle", "Open Dashboard", true, None::<&str>)?;
-            let start = MenuItem::with_id(app, "start", "Start Service", true, None::<&str>)?;
-            let stop = MenuItem::with_id(app, "stop", "Stop Service", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+    let runtime = Box::leak(Box::new(
+        tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(2)
+            .enable_all()
+            .build()
+            .expect("failed to spawn the tokio runtime"),
+    ));
 
-            let menu = Menu::with_items(app, &[&toggle, &start, &stop, &quit])?;
+    let application = adw::Application::builder()
+        .application_id(app::APP_ID)
+        .build();
 
-            let icon = app.default_window_icon().cloned();
-            if let Some(window) = app.get_webview_window("main") {
-                if let Some(ref ic) = icon {
-                    let _ = window.set_icon(ic.clone());
-                }
-            }
-            let mut tray_builder = TrayIconBuilder::new()
-                .menu(&menu)
-                .tooltip("Orbiscreen Host Control Center");
+    let handle = runtime.handle().clone();
+    application.connect_activate(move |app| {
+        if let Some(window) = app.active_window() {
+            window.present();
+        } else {
+            app::Ui::launch(app, handle.clone());
+        }
+    });
 
-            if let Some(icon) = icon {
-                tray_builder = tray_builder.icon(icon);
-            }
-
-            let _tray = tray_builder
-                .on_menu_event(|app, event| match event.id.as_ref() {
-                    "toggle" => {
-                        if let Some(window) = app.get_webview_window("main") {
-                            let _ = window.show();
-                            let _ = window.set_focus();
-                        }
-                    }
-                    "start" => {
-                        tauri::async_runtime::spawn(async {
-                            let _ = daemon_client::DaemonClient::start_service().await;
-                        });
-                    }
-                    "stop" => {
-                        tauri::async_runtime::spawn(async {
-                            let _ = daemon_client::DaemonClient::stop_service().await;
-                        });
-                    }
-                    "quit" => {
-                        app.exit(0);
-                    }
-                    _ => {}
-                })
-                .on_tray_icon_event(|tray, event| {
-                    if let TrayIconEvent::Click {
-                        button: MouseButton::Left,
-                        button_state: MouseButtonState::Up,
-                        ..
-                    } = event
-                    {
-                        let app = tray.app_handle();
-                        if let Some(window) = app.get_webview_window("main") {
-                            let _ = window.show();
-                            let _ = window.set_focus();
-                        }
-                    }
-                })
-                .build(app)?;
-
-            Ok(())
-        })
-        .on_window_event(|window, event| {
-            if let WindowEvent::CloseRequested { api, .. } = event {
-                api.prevent_close();
-                let _ = window.hide();
-            }
-        })
-        .invoke_handler(tauri::generate_handler![
-            commands::get_status,
-            commands::start_service,
-            commands::stop_service,
-            commands::restart_service,
-            commands::run_doctor_check,
-            commands::run_doctor_fix,
-            commands::get_autostart,
-            commands::set_autostart,
-            commands::open_browser,
-            commands::set_display_settings,
-            commands::get_app_version
-        ])
-        .run(tauri::generate_context!())
-        .expect("error while running orbiscreen-gui");
+    application.run()
 }

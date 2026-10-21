@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.39.0] - 2026-10-21
+
+### Changed
+- feat: rewrite the desktop GUI as a native GTK4 + libadwaita application
+
+The desktop control center is no longer a Tauri/WebKitGTK webview: it is a real native
+Linux app built with gtk4-rs and libadwaita. WebKitGTK, JavaScriptCore, libsoup, GTK3 and
+libappindicator disappear from the build and runtime dependencies; the GUI now links
+against GTK 4.10+ and libadwaita 1.4+ only. The window keeps every feature of the old
+interface and adds a few:
+
+- Native libadwaita window with a custom segmented tab bar, rounded cards, and the same
+  Catppuccin (Mocha dark / Latte light) palette as the Android client, following the
+  system color scheme automatically in both directions.
+- Status hero card with a colored state badge, live resolution/encoder/clients specs,
+  a centered scannable QR code, copy/open stream URL actions, and a full-width
+  start/stop button.
+- USB accessory card with live device detection and the same doctor report data the
+  CLI prints (`orbiscreen doctor --json`), now parsed for real instead of the old
+  hardcoded strings: compositor, capture plan, uinput permissions, hardware encoder,
+  network ports, and USB devices each report their actual state with status icons.
+- Display & Input page with pill chips for the resolution and framerate presets,
+  a touch/stylus capability card, and the autostart switch.
+- Bilingual Arabic/English interface with automatic RTL mirroring, persisted in
+  `~/.config/orbiscreen/gui.json`; the in-app theme switcher was removed in favor of
+  following the system style, per GNOME HIG.
+- The system tray icon now speaks StatusNotifierItem directly through `ksni` (pure D-Bus,
+  no GTK3/appindicator dependency) with the same menu and close-to-tray behavior.
+- Version bumped to 0.39.0 across the Cargo workspace, Android (`versionCode` 181),
+  PKGBUILD, Debian, COPR, and documentation badges.
+
 ## [v0.38.0] - 2026-10-20
 
 ### Fixed

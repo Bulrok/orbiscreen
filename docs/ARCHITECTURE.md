@@ -2,7 +2,7 @@
 
 # Architecture Specification - Orbiscreen
 
-[![Version](https://img.shields.io/badge/version-0.38.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.39.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
 ![Rust](https://img.shields.io/badge/rust-1.92%2B-16a34a?style=flat-square&logo=rust)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Android-9333ea?style=flat-square&logo=linux)
@@ -58,7 +58,7 @@ The same loop in words:
 5. Clients send input events back through `orbiscreen-transport`.
 6. `orbiscreen-input` injects them into the desktop (uinput, XTEST, wlroots virtual devices, or portal RemoteDesktop).
 
-The daemon process (`orbiscreen-daemon`) wires all crates together and exposes a D-Bus service; the desktop GUI (`orbiscreen-gui`, Tauri v2) and the CLI talk to it over D-Bus.
+The daemon process (`orbiscreen-daemon`) wires all crates together and exposes a D-Bus service; the desktop GUI (`orbiscreen-gui`, native GTK4 + libadwaita) and the CLI talk to it over D-Bus.
 
 ---
 
@@ -73,7 +73,7 @@ The daemon process (`orbiscreen-daemon`) wires all crates together and exposes a
 | `orbiscreen-input` | Reverse input injection: uinput touchscreen/tablet/keyboard, XTEST, wlroots virtual-pointer/virtual-keyboard, portal RemoteDesktop | `evdevil`, `ashpd`, `orbiscreen-core` |
 | `orbiscreen-transport` | All client-facing protocol surfaces: HTTP `/stream` `/input` `/api/*` `/health`, UDP Annex-B with Reed-Solomon FEC, WebTransport Annex-B (`wt_port`), USB AOA bulk video, mDNS advertising, pairing, token auth, per-client display session routing | `axum`, `mdns-sd`, `wtransport`, `gstreamer`, `orbiscreen-core`, `orbiscreen-input` |
 | `orbiscreen-daemon` | Binary that wires every crate together; systemd integration; D-Bus service (`com.orbiscreen.Daemon`); `doctor` diagnostics | `zbus`, `clap`, `tokio` |
-| `orbiscreen-gui` | Desktop control center (Tauri v2): status, start/stop, resolution chips over D-Bus | `zbus`, `serde_json` |
+| `orbiscreen-gui` | Desktop control center (native GTK4 + libadwaita): status, start/stop, resolution presets over D-Bus | `gtk4`, `libadwaita`, `zbus`, `ksni` |
 
 ---
 

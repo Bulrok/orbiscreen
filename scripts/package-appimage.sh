@@ -31,10 +31,10 @@ ARCH="$(uname -m)"
 
 # ── Build Binaries ──
 echo "Building release binaries..."
-if pkg-config --atleast-version=3.0 libsoup-3.0 2>/dev/null && pkg-config --atleast-version=4.1 javascriptcoregtk 2>/dev/null; then
+if pkg-config --atleast-version=4.10 gtk4 2>/dev/null && pkg-config --atleast-version=1.2 libadwaita-1 2>/dev/null; then
     cargo build --release --workspace
 else
-    echo "warning: libsoup-3.0 or webkit2gtk not found; building without GUI" >&2
+    echo "warning: gtk4 or libadwaita not found; building without GUI" >&2
     cargo build --release -p orbiscreen-daemon
 fi
 
@@ -91,7 +91,7 @@ else
     EXEC_LINE="orbiscreen start"
     TERMINAL="true"
 fi
-cat > "$APP/orbiscreen.desktop" <<EOF
+cat > "$APP/orbiscreen.gui.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Orbiscreen
@@ -103,7 +103,7 @@ Terminal=${TERMINAL}
 Categories=Utility;HardwareSettings;
 Keywords=monitor;display;virtual;screen;second;android;
 StartupNotify=true
-StartupWMClass=orbiscreen-gui
+StartupWMClass=orbiscreen.gui
 EOF
 
 rasterize_256() {

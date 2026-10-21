@@ -31,7 +31,7 @@ if cargo build --release -p orbiscreen-gui; then
     install -m755 target/release/orbiscreen-gui "${INSTALL_DIR}/orbiscreen-gui"
     GUI_INSTALLED=1
 else
-    echo "[Orbiscreen] Skipping the desktop GUI: its webkit2gtk build dependencies are missing."
+    echo "[Orbiscreen] Skipping the desktop GUI: its GTK4/libadwaita build dependencies are missing."
 fi
 
 # ── Install Web Client Assets ──
@@ -66,7 +66,7 @@ EOF
 # ── Desktop & Icon Integration ──
 mkdir -p "${HOME}/.local/share/applications" "${HOME}/.local/share/icons/hicolor/scalable/apps"
 if [ "${GUI_INSTALLED}" = "1" ]; then
-    cp -f data/orbiscreen.desktop "${HOME}/.local/share/applications/"
+    cp -f data/orbiscreen.desktop "${HOME}/.local/share/applications/orbiscreen.gui.desktop"
 else
     echo "[Orbiscreen] Skipping the desktop entry: it launches orbiscreen-gui, which is not installed."
 fi

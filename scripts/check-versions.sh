@@ -47,7 +47,6 @@ check() {
 }
 
 check "PKGBUILD" '^pkgver=[0-9.]+' 's/^pkgver=//p'
-check "crates/orbiscreen-gui/tauri.conf.json" '"version": "[0-9.]+"' 's/.*"\([0-9.]*\)".*/\1/p'
 check "data/orbiscreen-copr.spec" '^%global version [0-9.]+' 's/^%global version *//p'
 check "clients/android/app/build.gradle.kts" 'versionName = "[0-9.]+"' 's/.*"\([0-9.]*\)".*/\1/p'
 

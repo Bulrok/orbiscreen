@@ -9,7 +9,7 @@
 # ── Metadata ──
 Name:           orbiscreen
 # Single source of truth inside this spec; every other field refers to %{version}.
-%global version 0.38.0
+%global version 0.39.0
 
 Version:        %{version}
 Release:        1%{?dist}
@@ -28,9 +28,8 @@ BuildRequires:  pkgconfig(gstreamer-video-1.0)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(dbus-1)
-BuildRequires:  pkgconfig(gtk+-3.0)
-BuildRequires:  pkgconfig(webkit2gtk-4.1)
-BuildRequires:  pkgconfig(ayatana-appindicator3-0.1)
+BuildRequires:  pkgconfig(gtk4)
+BuildRequires:  pkgconfig(libadwaita-1)
 BuildRequires:  git-core
 
 Requires:       gstreamer1 gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-bad-free
@@ -69,7 +68,7 @@ for size in 16 24 32 48 64 128 256 512; do
         ln -sf orbiscreen.png "%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/orbiscreen-gui.png"
     fi
 done
-install -Dm0644 data/orbiscreen.desktop %{buildroot}%{_datadir}/applications/orbiscreen.desktop
+install -Dm0644 data/orbiscreen.desktop %{buildroot}%{_datadir}/applications/orbiscreen.gui.desktop
 install -Dm0755 scripts/install-evdi-module.sh %{buildroot}%{_datadir}/orbiscreen/install-evdi-module.sh
 install -Dm0644 data/99-orbiscreen-usb.rules %{buildroot}%{_udevrulesdir}/99-orbiscreen-usb.rules
 
@@ -132,7 +131,7 @@ fi
 %{_bindir}/orbiscreen
 %{_bindir}/orbiscreen-gui
 %{_datadir}/icons/hicolor/*/apps/orbiscreen*.*
-%{_datadir}/applications/orbiscreen.desktop
+%{_datadir}/applications/orbiscreen.gui.desktop
 %{_userunitdir}/orbiscreen.service
 %{_datadir}/orbiscreen/client/index.html
 %{_datadir}/orbiscreen/client/style.css
@@ -148,6 +147,9 @@ fi
 %{_udevrulesdir}/99-orbiscreen-usb.rules
 
 %changelog
+* Fri Oct 03 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.39.0-1
+- Release 0.39.0: rewrite the desktop GUI as a native GTK4 + libadwaita application carrying the Orbiscreen brand theme
+
 * Tue Oct 20 2026 shadow-x78 <107577376+shadow-x78@users.noreply.github.com> - 0.38.0-1
 - Release 0.38.0: stop the IDR flood when the AOA video lane stalls for hours (raise debounce to 1s, halt after 64 consecutive evictions)
 

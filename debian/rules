@@ -26,7 +26,7 @@ override_dh_auto_install:
 			ln -sf orbiscreen.png debian/orbiscreen/usr/share/icons/hicolor/$${size}x$${size}/apps/orbiscreen-gui.png; \
 		fi \
 	done
-	install -Dm0644 data/orbiscreen.desktop debian/orbiscreen/usr/share/applications/orbiscreen.desktop
+	install -Dm0644 data/orbiscreen.desktop debian/orbiscreen/usr/share/applications/orbiscreen.gui.desktop
 	install -Dm0755 scripts/install-evdi-module.sh debian/orbiscreen/usr/share/orbiscreen/install-evdi-module.sh
 	for f in index.html style.css app.js annexb.js stats.js favicon.svg favicon.png apple-touch-icon.png; do \
 		install -Dm0644 "clients/web/$$f" debian/orbiscreen/usr/share/orbiscreen/client/$$f; \

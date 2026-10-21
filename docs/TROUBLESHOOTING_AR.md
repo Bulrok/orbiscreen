@@ -2,7 +2,7 @@
 
 # استكشاف الأخطاء وإصلاحها - Orbiscreen
 
-[![الإصدار](https://img.shields.io/badge/version-0.38.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![الإصدار](https://img.shields.io/badge/version-0.39.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
 [![الرخصة](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
 ![Rust](https://img.shields.io/badge/rust-1.92%2B-16a34a?style=flat-square&logo=rust)
 ![المنصّة](https://img.shields.io/badge/platform-Linux%20%7C%20Android-9333ea?style=flat-square&logo=linux)
@@ -90,18 +90,18 @@
 
 **الأعراض:**
 ```
-dpkg-buildpackage: error: unmet build-dependency: libwebkit2gtk-4.1-dev
+dpkg-buildpackage: error: unmet build-dependency: libgtk-4-dev
 ```
 أو من مهمة Ubuntu:
 ```
-error: Package 'libjavascriptcoregtk-4.1-dev' has no installation candidate
+error: Package 'libadwaita-1-dev' has no installation candidate
 ```
 
 **السبب:**
-يبني `debian/rules` مساحة العمل كاملة، ومنها لوحة تحكم Tauri. وهي تحتاج حزم WebKitGTK للتطوير، وعلى `debian/control` أن يذكر كل واحدة منها وإلا لم يبدأ البناء أصلاً.
+يبني `debian/rules` مساحة العمل كاملة، ومنها مركز التحكم الأصلي بـ GTK4. وهي تحتاج حزم GTK4 وlibadwaita للتطوير، وعلى `debian/control` أن يذكرها وإلا لم يبدأ البناء أصلاً.
 
 **الحل:**
-يجب أن يحتوي `Build-Depends` على `libwebkit2gtk-4.1-dev` و`libjavascriptcoregtk-4.1-dev` و`libsoup-3.0-dev` و`libgtk-3-dev` و`librsvg2-dev` و`libayatana-appindicator3-dev` إلى جانب حزم GStreamer. يثبّتها المسار أيضاً قبل `debuild`؛ فإن كانت صورة PPA تفتقدها فشل البناء داخل المسار لا داخل `debian/rules`.
+يجب أن يحتوي `Build-Depends` على `libgtk-4-dev` و`libadwaita-1-dev` إلى جانب حزم GStreamer. يثبّتها المسار أيضاً قبل `debuild`؛ فإن كانت صورة PPA تفتقدها فشل البناء داخل المسار لا داخل `debian/rules`.
 
 ---
 
@@ -118,7 +118,7 @@ error: Failed build dependencies:
 يصرّف `data/orbiscreen-copr.spec` مساحة العمل نفسها، فيحتاج نظائر Fedora للحزم التي يحتاجها بناء Debian.
 
 **الحل:**
-تأكد أن `BuildRequires` في الملف يذكر `gstreamer1-devel` و`gstreamer1-plugins-base-devel` و`libdrm-devel` و`libxkbcommon-devel` و`webkit2gtk4.1-devel` و`gtk3-devel` و`libappindicator-gtk3-devel` و`librsvg2-devel`، وأن إصدار Rust المطلوب على الأقل بقدر `rust-version` في `Cargo.toml`. ويلتقط `scripts/check-versions.sh` وسم `Version:` قديماً، لكنه لا يلتقط متطلّب بناء ناقصاً.
+تأكد أن `BuildRequires` في الملف يذكر `gstreamer1-devel` و`gstreamer1-plugins-base-devel` و`libdrm-devel` و`libxkbcommon-devel` و`gtk4-devel` و`libadwaita-devel`، وأن إصدار Rust المطلوب على الأقل بقدر `rust-version` في `Cargo.toml`. ويلتقط `scripts/check-versions.sh` وسم `Version:` قديماً، لكنه لا يلتقط متطلّب بناء ناقصاً.
 
 ---
 
@@ -139,7 +139,7 @@ cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --locked
 cargo machete && cargo deny check && cargo audit
 ```
-تعمل البوابة على مساحة العمل بما فيها حزمة الواجهة الرسومية، لذا يحتاج `cargo clippy --workspace` إلى حزم WebKitGTK للتطوير التي يثبّتها `ci.yml`.
+تعمل البوابة على مساحة العمل بما فيها حزمة الواجهة الرسومية، لذا يحتاج `cargo clippy --workspace` إلى حزم GTK4 وlibadwaita للتطوير التي يثبّتها `ci.yml`.
 
 ---
 

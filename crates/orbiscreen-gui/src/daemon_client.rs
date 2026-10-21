@@ -243,6 +243,25 @@ impl DaemonClient {
         PathBuf::from(home).join(".config/autostart/orbiscreen.desktop")
     }
 
+    pub fn open_browser(url: &str) -> Result<(), String> {
+        let rest = match url.split_once("://") {
+            Some((scheme, rest))
+                if scheme.eq_ignore_ascii_case("http") || scheme.eq_ignore_ascii_case("https") =>
+            {
+                rest
+            }
+            _ => return Err("only http and https URLs can be opened".into()),
+        };
+        if rest.is_empty() || rest.contains(['\n', '\r', '\0']) {
+            return Err("malformed URL".into());
+        }
+        std::process::Command::new("xdg-open")
+            .arg(url)
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| format!("failed to launch a browser: {e}"))
+    }
+
     fn detect_local_ips() -> Vec<String> {
         let mut ips = Vec::new();
         if let Ok(addrs) = std::net::UdpSocket::bind("0.0.0.0:0") {

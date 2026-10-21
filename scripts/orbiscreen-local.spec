@@ -51,7 +51,7 @@ for size in 16 24 32 48 64 128 256 512; do
         ln -sf orbiscreen.png "%{buildroot}/usr/share/icons/hicolor/${size}x${size}/apps/orbiscreen-gui.png"
     fi
 done
-install -m 0644 %{_projectroot}/data/orbiscreen.desktop %{buildroot}/usr/share/applications/orbiscreen.desktop
+install -m 0644 %{_projectroot}/data/orbiscreen.desktop %{buildroot}/usr/share/applications/orbiscreen.gui.desktop
 install -m 0644 %{_projectroot}/data/99-orbiscreen-usb.rules %{buildroot}/usr/lib/udev/rules.d/99-orbiscreen-usb.rules
 install -m 0755 %{_projectroot}/scripts/install-evdi-module.sh %{buildroot}/usr/share/orbiscreen/install-evdi-module.sh
 
@@ -118,7 +118,7 @@ fi
 /usr/bin/orbiscreen-gui
 %endif
 /usr/share/icons/hicolor/*/apps/orbiscreen*.*
-/usr/share/applications/orbiscreen.desktop
+/usr/share/applications/orbiscreen.gui.desktop
 /usr/lib/udev/rules.d/99-orbiscreen-usb.rules
 /usr/lib/systemd/user/orbiscreen.service
 /usr/share/orbiscreen/client/index.html

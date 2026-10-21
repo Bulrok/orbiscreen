@@ -1,3 +1,17 @@
+orbiscreen (0.39.0~ubuntunoble1) noble; urgency=medium
+
+  * Release 0.39.0 for Ubuntu noble.
+  * Rewrite the desktop GUI as a native GTK4 + libadwaita application:
+    WebKitGTK, JavaScriptCore, libsoup, GTK3 and appindicator are replaced
+    by GTK 4.10+ and libadwaita 1.4+, the interface carries the same
+    Catppuccin palette as the Android client with automatic dark/light
+    switching, the doctor page now parses the real `orbiscreen doctor
+    --json` report, and the tray icon uses pure-D-Bus StatusNotifierItem
+    via ksni. Bilingual Arabic/English UI with RTL.
+  * Bump version to 0.39.0 across all packages; Android versionCode 181.
+
+-- shadow-x78 <107577376+shadow-x78@users.noreply.github.com>  Wed, 21 Oct 2026 00:00:00 +0300
+
 orbiscreen (0.38.0~ubuntunoble1) noble; urgency=medium
 
   * Release 0.38.0 for Ubuntu noble.

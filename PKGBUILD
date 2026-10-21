@@ -6,7 +6,7 @@
 # Maintainer: shadow-x78 <107577376+shadow-x78@users.noreply.github.com>
 
 pkgname=orbiscreen
-pkgver=0.38.0
+pkgver=0.39.0
 pkgrel=1
 pkgdesc="Turn Android devices into high-performance secondary monitors for Linux (Wayland & X11)"
 arch=('x86_64')
@@ -21,7 +21,7 @@ depends=(
     'libxkbcommon'
     'hicolor-icon-theme'
 )
-makedepends=('cargo' 'git' 'pkgconf' 'python' 'gtk3' 'webkit2gtk-4.1')
+makedepends=('cargo' 'git' 'pkgconf' 'python' 'gtk4' 'libadwaita')
 optdepends=(
     'android-tools: USB transport via adb reverse'
     'evdi-dkms: kernel-level virtual display on X11/GNOME (not needed on KDE Plasma Wayland or wlroots)'
@@ -58,7 +58,7 @@ package() {
             ln -sf orbiscreen.png "${pkgdir}/usr/share/icons/hicolor/${size}x${size}/apps/orbiscreen-gui.png"
         fi
     done
-    install -Dm0644 data/orbiscreen.desktop "${pkgdir}/usr/share/applications/orbiscreen.desktop"
+    install -Dm0644 data/orbiscreen.desktop "${pkgdir}/usr/share/applications/orbiscreen.gui.desktop"
     install -Dm0755 scripts/install-evdi-module.sh "${pkgdir}/usr/share/orbiscreen/install-evdi-module.sh"
     install -Dm0644 data/99-orbiscreen-usb.rules "${pkgdir}/usr/lib/udev/rules.d/99-orbiscreen-usb.rules"
 

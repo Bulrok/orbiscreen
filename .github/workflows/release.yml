@@ -45,7 +45,7 @@ jobs:
             libevdev-dev libxkbcommon-dev libwayland-dev \
             libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
             gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
-            libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
+            libgtk-4-dev libadwaita-1-dev
 
       # ── Lint ──
       - name: Format check
@@ -95,7 +95,7 @@ jobs:
             libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
             gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
             rpm imagemagick librsvg2-bin \
-            libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev libayatana-appindicator3-dev
+            libgtk-4-dev libadwaita-1-dev
 
       # ── Build ──
       - name: Build release binaries
@@ -120,7 +120,7 @@ jobs:
           install -m 644 clients/web/fonts/*.ttf release-bundle/share/orbiscreen/client/fonts/
           install -m 644 data/orbiscreen.service release-bundle/lib/systemd/user/orbiscreen.service
           install -m 644 data/99-orbiscreen-usb.rules release-bundle/lib/udev/rules.d/99-orbiscreen-usb.rules
-          install -m 644 data/orbiscreen.desktop release-bundle/share/applications/orbiscreen.desktop
+          install -m 644 data/orbiscreen.desktop release-bundle/share/applications/orbiscreen.gui.desktop
           cat > release-bundle/README.md <<'README'
           # Orbiscreen
 
@@ -135,8 +135,8 @@ jobs:
             install -Dm755 bin/orbiscreen-gui ~/.local/bin/orbiscreen-gui
             install -Dm644 -t ~/.local/share/orbiscreen/client \
               share/orbiscreen/client/*
-            install -Dm644 share/applications/orbiscreen.desktop \
-              ~/.local/share/applications/orbiscreen.desktop
+            install -Dm644 share/applications/orbiscreen.gui.desktop \
+              ~/.local/share/applications/orbiscreen.gui.desktop
             install -Dm644 lib/systemd/user/orbiscreen.service \
               ~/.config/systemd/user/orbiscreen.service
             sudo install -Dm644 lib/udev/rules.d/99-orbiscreen-usb.rules \

@@ -41,7 +41,7 @@ if [ -f target/release/orbiscreen-gui ]; then
     cp -f target/release/orbiscreen-gui "${BUILD_DIR}/usr/bin/"
 fi
 mkdir -p "${BUILD_DIR}/usr/share/applications" "${BUILD_DIR}/usr/share/icons/hicolor/scalable/apps"
-cp -f data/orbiscreen.desktop "${BUILD_DIR}/usr/share/applications/"
+cp -f data/orbiscreen.desktop "${BUILD_DIR}/usr/share/applications/orbiscreen.gui.desktop"
 cp -f data/orbiscreen.svg "${BUILD_DIR}/usr/share/icons/hicolor/scalable/apps/"
 ln -sf orbiscreen.svg "${BUILD_DIR}/usr/share/icons/hicolor/scalable/apps/orbiscreen-gui.svg"
 for size in 16 24 32 48 64 128 256 512; do

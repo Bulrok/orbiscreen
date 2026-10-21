@@ -2,7 +2,7 @@
 
 # Troubleshooting - Orbiscreen
 
-[![Version](https://img.shields.io/badge/version-0.38.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.39.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
 ![Rust](https://img.shields.io/badge/rust-1.92%2B-16a34a?style=flat-square&logo=rust)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Android-9333ea?style=flat-square&logo=linux)
@@ -91,24 +91,23 @@ Packaging runs in dedicated workflows rather than in `ci.yml`, so a green
 
 **Symptom:**
 ```
-dpkg-buildpackage: error: unmet build-dependency: libwebkit2gtk-4.1-dev
+dpkg-buildpackage: error: unmet build-dependency: libgtk-4-dev
 ```
 or, from the Ubuntu job:
 ```
-error: Package 'libjavascriptcoregtk-4.1-dev' has no installation candidate
+error: Package 'libadwaita-1-dev' has no installation candidate
 ```
 
 **Cause:**
-`debian/rules` builds the whole workspace, which includes the Tauri control
-centre. That needs the WebKitGTK development packages, and `debian/control`
-has to list every one of them or the build cannot start.
+`debian/rules` builds the whole workspace, which includes the native GTK4
+control centre. That needs the GTK4 and libadwaita development packages, and
+`debian/control` has to list them or the build cannot start.
 
 **Fix:**
-`Build-Depends` must carry `libwebkit2gtk-4.1-dev`,
-`libjavascriptcoregtk-4.1-dev`, `libsoup-3.0-dev`, `libgtk-3-dev`,
-`librsvg2-dev` and `libayatana-appindicator3-dev` next to the GStreamer
-packages. The workflow also installs them before `debuild`; if the PPA image
-lacks them, the build fails in the workflow rather than in `debian/rules`.
+`Build-Depends` must carry `libgtk-4-dev` and `libadwaita-1-dev` next to the
+GStreamer packages. The workflow also installs them before `debuild`; if the
+PPA image lacks them, the build fails in the workflow rather than in
+`debian/rules`.
 
 ---
 
@@ -128,8 +127,8 @@ Fedora equivalents of the packages the Debian build needs.
 **Fix:**
 Confirm `BuildRequires` in the spec lists `gstreamer1-devel`,
 `gstreamer1-plugins-base-devel`, `libdrm-devel`, `libxkbcommon-devel`,
-`webkit2gtk4.1-devel`, `gtk3-devel`, `libappindicator-gtk3-devel` and
-`librsvg2-devel`, and that the requested Rust is at least as new as
+`gtk4-devel` and `libadwaita-devel`, and that the requested Rust is at least
+as new as
 `rust-version` in `Cargo.toml`. `scripts/check-versions.sh` catches a stale
 `Version:` tag but not a missing build requirement.
 
@@ -157,8 +156,8 @@ cargo test --workspace --locked
 cargo machete && cargo deny check && cargo audit
 ```
 The gate runs on the workspace including the GUI crate, so
-`cargo clippy --workspace` needs the WebKitGTK development packages that
-`ci.yml` installs.
+`cargo clippy --workspace` needs the GTK4 and libadwaita development
+packages that `ci.yml` installs.
 
 ---
 

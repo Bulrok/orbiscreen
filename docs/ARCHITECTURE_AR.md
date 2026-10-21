@@ -2,7 +2,7 @@
 
 # مواصفات المعمارية - Orbiscreen
 
-[![الإصدار](https://img.shields.io/badge/version-0.38.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![الإصدار](https://img.shields.io/badge/version-0.39.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
 [![الرخصة](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
 ![Rust](https://img.shields.io/badge/rust-1.92%2B-16a34a?style=flat-square&logo=rust)
 ![المنصّة](https://img.shields.io/badge/platform-Linux%20%7C%20Android-9333ea?style=flat-square&logo=linux)
@@ -58,7 +58,7 @@ flowchart TD
 5. تُرسل العملاء أحداث الإدخال عائِدة عبر `orbiscreen-transport`.
 6. يحقن `orbiscreen-input` تلك الأحداث في سطح المكتب (uinput، أو XTEST، أو أجهزة wlroots الافتراضية، أو portal RemoteDesktop).
 
-تربط عملية `orbiscreen-daemon` جميع الحزم ببعضها وتوفّر خدمة D-Bus؛ واجهة سطح المكتب (`orbiscreen-gui` بتقنية Tauri v2) وواجهة الأوامر تتحدثان معها عبر D-Bus.
+تربط عملية `orbiscreen-daemon` جميع الحزم ببعضها وتوفّر خدمة D-Bus؛ واجهة سطح المكتب (`orbiscreen-gui` بتقنية GTK4 + libadwaita الأصلية) وواجهة الأوامر تتحدثان معها عبر D-Bus.
 
 ---
 
@@ -75,7 +75,7 @@ flowchart TD
 | `orbiscreen-input` | حقن الإدخال العكسي: شاشة لمس وألواح مفاتيح عبر uinput، و XTEST، وأجهزة wlroots الافتراضية (virtual-pointer / virtual-keyboard)، و portal RemoteDesktop | `evdevil`، `ashpd`، `orbiscreen-core` |
 | `orbiscreen-transport` | كل واجهات العملاء: نقاط HTTP ‏(`/stream` و `/input` و `/api/*` و `/health`)‏، و UDP Annex-B مع تصحيح أخطاء Reed-Solomon، و WebTransport Annex-B ‏(`wt_port`)‏، وبث USB عبر AOA، وإعلان mDNS، والاقتران، والمصادقة بالتوكن، وتوجيه جلسات العرض لكل عميل | `axum`، `mdns-sd`، `wtransport`، `gstreamer`، `orbiscreen-core`، `orbiscreen-input` |
 | `orbiscreen-daemon` | الثنائي الرئيسي الذي يربط كل الحزم؛ تكامل systemd؛ خدمة D-Bus ‏(`com.orbiscreen.Daemon`)‏؛ أداة التشخيص `doctor` | `zbus`، `clap`، `tokio` |
-| `orbiscreen-gui` | مركز تحكم سطح المكتب (‏Tauri v2)‏: الحالة، والتشغيل والإيقاف، وأزرار الدقة عبر D-Bus | `zbus`، `serde_json` |
+| `orbiscreen-gui` | مركز تحكم سطح المكتب (‏GTK4 + libadwaita أصلي)‏: الحالة، والتشغيل والإيقاف، وخيارات الدقة عبر D-Bus | `gtk4`، `libadwaita`، `zbus`، `ksni` |
 
 </div>
 

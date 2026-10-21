@@ -13,13 +13,12 @@ on:
   workflow_dispatch:
     inputs:
       series:
-        description: 'Ubuntu series (e.g. noble for 24.04, jammy for 22.04)'
+        description: 'Ubuntu series (e.g. noble for 24.04, oracular for 24.10)'
         required: true
         default: 'noble'
         type: choice
         options:
           - noble
-          - jammy
           - oracular
 
 concurrency:
@@ -53,8 +52,7 @@ jobs:
             libglib2.0-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
             gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
             libevdev-dev libxkbcommon-dev \
-            libwebkit2gtk-4.1-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev \
-            libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+            libgtk-4-dev libadwaita-1-dev
 
       # ── Pre-Upload Verification ──
       - name: Verify source build before upload
